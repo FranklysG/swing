@@ -22,9 +22,9 @@ class ReservaForm extends TPage
         $this->form->setFieldSizes('100%');
         
         // master fields
-        $id = new THidden('id');
-        $cadastro_tipo_id = new TDBUniqueSearch('cadastro_tipo_id', 'app', 'CadastroTipo', 'id', 'tipo_id');
-        $quarto_id = new TDBUniqueSearch('quarto_id', 'app', 'Quarto', 'id', 'n_quarto');
+        $id = new TEntry('id');
+        $cadastro_tipo_id = new THidden('cadastro_tipo_id');
+        $quarto_id = new THidden('quarto_id');
         $hora_a = new TEntry('hora_a');
         $hora_f = new TEntry('hora_f');
         $status = new TEntry('status');
@@ -33,10 +33,9 @@ class ReservaForm extends TPage
         // detail fields
         $detail_uniqid = new THidden('detail_uniqid');
         $detail_id = new THidden('detail_id');
-        $detail_n_quarto = new TEntry('detail_n_quarto');
-        // $detail_n_quarto = new TDBUniqueSearch('detail_n_quarto', 'app', 'Quarto', 'id', 'n_quarto');
-        // $detail_n_quarto->setMinLength(0);
-        $detail_valor = new TEntry('detail_valor');
+        $detail_n_quarto = new TDBUniqueSearch('detail_n_quarto','app','Quarto','id','n_quarto');
+        $detail_n_quarto->setMinLength(0);
+        $detail_valor = new THidden('detail_valor');
         $detail_status = new THidden('detail_status');
         $detail_dtcadastro = new THidden('detail_dtcadastro');
         $detail_produto_id   = new TDBCheckGroup('detail_produto_id', 'app', 'Produto', 'id', 'nome');
@@ -46,36 +45,38 @@ class ReservaForm extends TPage
                 $label->setSize(200);
             }
         }
+
         if (!empty($id))
         {
             $id->setEditable(FALSE);
         }
         
-        $this->form->addFields([$id]);
+        $row = $this->form->addFields([$cadastro_tipo_id,$quarto_id]);
         // master fields
-        $row = $this->form->addFields( [new TLabel('Cadastro Tipo Id'), $cadastro_tipo_id],
-                                 [new TLabel('Quarto Id'), $quarto_id],
-                                 [new TLabel('Hora A'), $hora_a],
-                                 [new TLabel('Hora F'), $hora_f]);
+        $row = $this->form->addFields( [new TLabel('Id'), $id],
+                                [new TLabel('Hora Abertura'), $hora_a],
+                                [new TLabel('Hora Fechamento'), $hora_f]);
+        $row->layout = ['col-sm-1','col-sm-3','col-sm-3'];
+     
         
-        $row->layout = ['col-sm-3','col-sm-3','col-sm-3','col-sm-3'];
         // detail fields
         $this->form->addContent( ['<br><br><strong>QUARTOS OCUPADOS HOJE</strong><hr>']);
-        $this->form->addFields( [$detail_uniqid] );
-        $this->form->addFields( [$detail_id] );
+        $this->form->addContent( [$detail_uniqid,$detail_id] );
 
-        $add = TButton::create('add', [$this, 'onDetailAdd'], 'Register', 'fa:plus-circle green');
+        $add = TButton::create('add', [$this, 'onDetailAdd'], 'Ocupar', 'fa:plus-circle green');
         $add->getAction()->setParameter('static','1');
 
-        $row = $this->form->addFields( [new TLabel('N Quarto'), $detail_n_quarto],
-                                    [new TLabel('Valor'), $detail_valor],
-                                    [new TLabel(''), $add],
-                                    [new TLabel(''), $detail_status],
-                                    [new TLabel(''), $detail_dtcadastro] );
-
-        $row->layout = ['col-sm-3','col-sm-3','col-sm-3','col-sm-2','col-sm-2'];
-        $this->form->addFields( [$detail_produto_id] );
+        $this->form->addFields( [new TLabel('N° Quarto'), $detail_n_quarto],
+                                [new TLabel(''), $add],
+                                [$detail_valor],
+                                [$detail_status],
+                                [$detail_dtcadastro]
+                                );
+    
         $this->form->addContent( ['<br>']);
+        $this->form->addFields([$detail_produto_id]);
+
+        $this->form->addContent( ['<br><br>']);
         
         $this->detail_list = new BootstrapDatagridWrapper(new TDataGrid);
         $this->detail_list->setId('Quarto_list');
@@ -85,6 +86,7 @@ class ReservaForm extends TPage
         // items
         $this->detail_list->addColumn( new TDataGridColumn('uniqid', 'Uniqid', 'center') )->setVisibility(false);
         $this->detail_list->addColumn( new TDataGridColumn('id', 'Id', 'center') )->setVisibility(false);
+        $this->detail_list->addColumn( new TDataGridColumn('produto_id', 'Produto Id', 'left', 100) )->setVisibility(false);
         $this->detail_list->addColumn( new TDataGridColumn('n_quarto', 'N Quarto', 'left', 100) );
         $this->detail_list->addColumn( new TDataGridColumn('valor', 'Valor', 'left', 100) );
         $this->detail_list->addColumn( new TDataGridColumn('status', 'Status', 'left', 100) );
@@ -95,7 +97,7 @@ class ReservaForm extends TPage
         $action1->setFields( ['uniqid', '*'] );
         
         $action2 = new TDataGridAction([$this, 'onDetailDelete']);
-        $action2->setFields(['uniqid', '*']);
+        $action2->setField('uniqid');
         
         // add the actions to the datagrid
         $this->detail_list->addAction($action1, _t('Edit'), 'fa:edit blue');
@@ -152,10 +154,10 @@ class ReservaForm extends TPage
             $grid_data = [];
             $grid_data['uniqid'] = $uniqid;
             $grid_data['id'] = $data->detail_id;
+            $grid_data['produto_id'] = $data->detail_produto_id;
             $grid_data['n_quarto'] = $data->detail_n_quarto;
-            $grid_data['valor'] = ($data->detail_valor)?: 30;
+            $grid_data['valor'] = ($data->detail_valor)?: '30';
             $grid_data['status'] = ($data->detail_status)?: 1;
-            $grid_data['dtcadastro'] = date('d/m/Y');
             
             // insert row dynamically
             $row = $this->detail_list->addItem( (object) $grid_data );
@@ -165,7 +167,8 @@ class ReservaForm extends TPage
             
             // clear detail form fields
             $data->detail_uniqid = '';
-            $data->detail_id = '';
+            // $data->detail_id = '';
+            // $data->detail_produto_id = '';
             $data->detail_n_quarto = '';
             $data->detail_valor = '';
             $data->detail_status = '';
@@ -190,6 +193,7 @@ class ReservaForm extends TPage
         $data = new stdClass;
         $data->detail_uniqid = $param['uniqid'];
         $data->detail_id = $param['id'];
+        $data->detail_produto_id = $param['produto_id'];
         $data->detail_n_quarto = $param['n_quarto'];
         $data->detail_valor = $param['valor'];
         $data->detail_status = $param['status'];
@@ -209,6 +213,7 @@ class ReservaForm extends TPage
         $data = new stdClass;
         $data->detail_uniqid = '';
         $data->detail_id = '';
+        $data->detail_produto_id = '';
         $data->detail_n_quarto = '';
         $data->detail_valor = '';
         $data->detail_status = '';
@@ -235,7 +240,7 @@ class ReservaForm extends TPage
                 $key = $param['key'];
                 
                 $object = new Reserva($key);
-                $items  = Quarto::where('reserva_id', '=', $key)->load();
+                $items  = Quarto::where('id', '=', $key)->load();
                 
                 foreach( $items as $item )
                 {
@@ -272,21 +277,23 @@ class ReservaForm extends TPage
             $this->form->validate();
             
             $master = new Reserva;
+            $master->cadastro_tipo_id = 1 ;
             $master->fromArray( (array) $data);
             $master->store();
             
-            Quarto::where('reserva_id', '=', $master->id)->delete();
+            Quarto::where('id', '=', $master->id)->delete();
             
-            if( isset($param['Quarto_list_n_quarto']) )
+            if( $param['Quarto_list_produto_id'] )
             {
-                foreach( $param['Quarto_list_n_quarto'] as $key => $item_id )
+                foreach( $param['Quarto_list_produto_id'] as $key => $item_id )
                 {
                     $detail = new Quarto;
+                    $detail->produto_id  = $param['Quarto_list_produto_id'][$key];
                     $detail->n_quarto  = $param['Quarto_list_n_quarto'][$key];
                     $detail->valor  = $param['Quarto_list_valor'][$key];
                     $detail->status  = $param['Quarto_list_status'][$key];
                     $detail->dtcadastro  = $param['Quarto_list_dtcadastro'][$key];
-                    $detail->reserva_id = $master->id;
+                    $detail->id = $master->id;
                     $detail->store();
                 }
             }

@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menu>
-  <menuitem label="Cadastros">
-    <icon>fas:user fa-fw</icon>
-    <menu>
-      <menuitem label="Todos">
-        <action>CadastroList</action>
-        <icon>fas:arrow-alt-circle-right fa-fw</icon>
-      </menuitem>
-      <menuitem label="Tipos usuarios">
-        <action>TipoFormList</action>
-        <icon>fas:arrow-alt-circle-right fa-fw</icon>
-      </menuitem>
-    </menu>
-  </menuitem>
   <menuitem label="Reservas">
     <icon>fas:luggage-cart fa-fw</icon>
     <menu>
@@ -25,10 +12,6 @@
   <menuitem label="Extras">
     <icon>fas:box-open fa-fw</icon>
     <menu>
-      <menuitem label="Quartos">
-        <action>QuartoFormList</action>
-        <icon>fas:arrow-alt-circle-right fa-fw</icon>
-      </menuitem>
       <menuitem label="Produtos">
         <action>ProdutoFormList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>

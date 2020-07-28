@@ -208,6 +208,7 @@ class LoginForm extends TPage
      */
     public function onLoad($param)
     {
+        var_dump($param);
     }
     
     /**

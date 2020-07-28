@@ -29,7 +29,7 @@ class SystemAdministrationDashboard extends TPage
             $indicator3 = new THtmlRenderer('app/resources/info-box.html');
             $indicator4 = new THtmlRenderer('app/resources/info-box.html');
             
-            $indicator1->enableSection('main', ['title' => 'Total Clientes',    'icon' => 'users',       'background' => 'orange', 'value' => CadastroTipo::where('tipo_id', '=', 1)->count()]);
+            $indicator1->enableSection('main', ['title' => 'Total Clientes',    'icon' => 'users',       'background' => 'orange', 'value' => CadastroTipo::where('tipo_id', '=', 3)->count()]);
             $indicator2->enableSection('main', ['title' => 'Extimativa faturamento semanal',   'icon' => 'money-bill-wave',      'background' => 'blue',   'value' => SystemGroup::count()]);
             $indicator3->enableSection('main', ['title' => 'Extimativa faturamento mensal',    'icon' => 'receipt', 'background' => 'purple', 'value' => SystemUnit::count()]);
             $indicator4->enableSection('main', ['title' => 'Extimativa faturamento anaul', 'icon' => 'wallet',       'background' => 'green',  'value' => SystemProgram::count()]);

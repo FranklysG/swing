@@ -10,7 +10,7 @@ class Reserva extends TRecord
     const IDPOLICY =  'max'; // {max, serial}
     
     
-    private $cadastro_tipo;
+    private $usuario;
     private $quarto;
 
     /**
@@ -19,8 +19,7 @@ class Reserva extends TRecord
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
-        parent::addAttribute('cadastro_tipo_id');
-        parent::addAttribute('quarto_id');
+        parent::addAttribute('usuario_id');
         parent::addAttribute('hora_a');
         parent::addAttribute('hora_f');
         parent::addAttribute('status');
@@ -29,29 +28,29 @@ class Reserva extends TRecord
 
     
     /**
-     * Method set_cadastro_tipo
-     * Sample of usage: $reserva->cadastro_tipo = $object;
-     * @param $object Instance of CadastroTipo
+     * Method set_usuario
+     * Sample of usage: $reserva->usuario = $object;
+     * @param $object Instance of SystemUser
      */
-    public function set_cadastro_tipo(CadastroTipo $object)
+    public function set_usuario(SystemUser $object)
     {
-        $this->cadastro_tipo = $object;
-        $this->cadastro_tipo_id = $object->id;
+        $this->usuario = $object;
+        $this->usuario_id = $object->id;
     }
     
     /**
-     * Method get_cadastro_tipo
-     * Sample of usage: $reserva->cadastro_tipo->attribute;
-     * @returns CadastroTipo instance
+     * Method get_usuario
+     * Sample of usage: $reserva->usuario->attribute;
+     * @returns SystemUser instance
      */
-    public function get_cadastro_tipo()
+    public function get_usuario()
     {
         // loads the associated object
-        if (empty($this->cadastro_tipo))
-            $this->cadastro_tipo = new CadastroTipo($this->cadastro_tipo_id);
+        if (empty($this->usuario))
+            $this->usuario = new SystemUser($this->usuario_id);
     
         // returns the associated object
-        return $this->cadastro_tipo;
+        return $this->usuario;
     }
     
     

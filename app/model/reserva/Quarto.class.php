@@ -18,6 +18,7 @@ class Quarto extends TRecord
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
+        parent::addAttribute('reserva_id');
         parent::addAttribute('n_quarto');
         parent::addAttribute('valor');
         parent::addAttribute('status');
