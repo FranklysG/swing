@@ -47,7 +47,7 @@ class ReservaList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['ReservaForm', 'onEdit']), 'fa:plus green');
+        // $this->form->addActionLink(_t('New'), new TAction(['ReservaForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);

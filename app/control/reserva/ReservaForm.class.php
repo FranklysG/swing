@@ -30,6 +30,7 @@ class ReservaForm extends TPage
         $detail_n_quarto = new TEntry('detail_n_quarto');
         $detail_n_quarto->addValidation('Numero do quarto', new TRequiredValidator);
         $detail_valor = new TEntry('detail_valor');
+        $detail_valor->setMask('9!');
         $detail_status = new THidden('detail_status');
         $detail_dtcadastro = new THidden('detail_dtcadastro');
         $detail_produto_id   = new TDBCheckGroup('detail_produto_id', 'app', 'Produto', 'id', 'nome');
@@ -297,7 +298,7 @@ class ReservaForm extends TPage
             $master_id = $param['id'];
             
             $data = $this->form->getData();
-            $this->form->validate();
+            // $this->form->validate();
             
             Quarto::where('reserva_id', '=', $master_id)->delete();
             

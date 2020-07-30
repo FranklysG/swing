@@ -20,32 +20,27 @@ class ProdutoFormList extends TPage
         
         
         $this->form = new BootstrapFormBuilder('form_Produto');
-        $this->form->setFormTitle('Produto');
+        $this->form->setFormTitle('Cadastrar Produtos');
+        $this->form->setFieldSizes('100%');
         
 
         // create the form fields
-        $id = new TEntry('id');
+        $id = new THidden('id');
         $nome = new TEntry('nome');
+        $nome->addValidation('Nome Produto', new TRequiredValidator);
         $nome->forceUpperCase();
         $valor = new TEntry('valor');
+        $valor->setMask('9!');
+        $valor->addValidation('Valor Produto', new TRequiredValidator);
         // $dtcadastro = new THidden('dtcadastro');
 
 
         // add the fields
-        $this->form->addFields( [ new TLabel('Id') ], [ $id ] );
-        $this->form->addFields( [ new TLabel('Nome') ], [ $nome ] );
-        $this->form->addFields( [ new TLabel('Valor') ], [ $valor ] );
-        // $this->form->addFields( [ new TLabel('Dtcadastro') ], [ $dtcadastro ] );
-
-
-
-        // set sizes
-        $id->setSize('100%');
-        $nome->setSize('100%');
-        $valor->setSize('100%');
-        // $dtcadastro->setSize('100%');
-
-
+        $this->form->addFields( [ $id ] );
+        $row = $this->form->addFields( [ new TLabel('Nome'), $nome ],
+                                [ new TLabel('Valor'), $valor ] );
+        // $this->form->addFields( [ new TLabel('Dtcadastro'), $dtcadastro ] );
+        $row->layout = ['col-sm-4', 'col-sm-3'];
 
         if (!empty($id))
         {
@@ -74,6 +69,14 @@ class ProdutoFormList extends TPage
         $column_nome = new TDataGridColumn('nome', 'Nome', 'left');
         $column_valor = new TDataGridColumn('valor', 'Valor', 'left');
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'Dtcadastro', 'left');
+
+        $column_valor->setTransformer(function ($value) {
+            return Convert::toMonetario($value);
+        });
+
+        $column_dtcadastro->setTransformer(function ($value) {
+            return Convert::toDateBR($value);
+        });
 
 
         // add the columns to the DataGrid
