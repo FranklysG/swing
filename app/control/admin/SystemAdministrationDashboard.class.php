@@ -29,61 +29,72 @@ class SystemAdministrationDashboard extends TPage
             $indicator3 = new THtmlRenderer('app/resources/info-box.html');
             $indicator4 = new THtmlRenderer('app/resources/info-box.html');
             
-            $indicator1->enableSection('main', ['title' => 'Total Clientes',    'icon' => 'users',       'background' => 'orange', 'value' => CadastroTipo::where('tipo_id', '=', 3)->count()]);
-            $indicator2->enableSection('main', ['title' => 'Extimativa faturamento semanal',   'icon' => 'money-bill-wave',      'background' => 'blue',   'value' => SystemGroup::count()]);
-            $indicator3->enableSection('main', ['title' => 'Extimativa faturamento mensal',    'icon' => 'receipt', 'background' => 'purple', 'value' => SystemUnit::count()]);
-            $indicator4->enableSection('main', ['title' => 'Extimativa faturamento anaul', 'icon' => 'wallet',       'background' => 'green',  'value' => SystemProgram::count()]);
+            $today = date('Y-m-d');
+            $week_open = date('Y-m-d', strtotime('-1 week'));
+            $month_open = date('Y-m-01');
+            $month_close = date('Y-m-30');
+            $year_open = date('Y-01-01', strtotime('-1 year'));
+            $year_close = date('Y-12-30');
             
-            $chart1 = new THtmlRenderer('app/resources/google_bar_chart.html');
-            $data1 = [];
-            $data1[] = [ 'Group', 'Users' ];
+            // quartos semanais
+            $repositoy_week = new TRepository('Quarto');
+            $criteria_week = new TCriteria;
+            $criteria_week->add(new TFilter('date(dtcadastro)', 'between', "{$week_open}", "{$today}"));
+            $sum_week = $repositoy_week->sum($criteria_week, ['valor' => 'valor']);
+
+            // quartos mensais
+            $repositoy_month = new TRepository('Quarto');
+            $criteria_month = new TCriteria;
+            $criteria_month->add(new TFilter('date(dtcadastro)', 'between', "{$month_open}", "{$month_close}"));
+            $sum_month = $repositoy_month->sum($criteria_month, ['valor' => 'valor']);
             
-            $stats1 = SystemUserGroup::groupBy('system_group_id')->countBy('system_user_id', 'count');
-            if ($stats1)
-            {
-                foreach ($stats1 as $row)
-                {
-                    $data1[] = [ SystemGroup::find($row->system_group_id)->name, (int) $row->count];
+            // quartos mensais
+            $repositoy_year = new TRepository('Quarto');
+            $criteria_year = new TCriteria;
+            $criteria_year->add(new TFilter('date(dtcadastro)', 'between', "{$year_open}", "{$year_close}"));
+            $sum_year = $repositoy_year->sum($criteria_year, ['valor' => 'valor']);
+
+            $indicator1->enableSection('main', ['title' => 'Ocupados Hoje',    'icon' => 'users',       'background' => 'orange', 'value' => Quarto::where('date(dtcadastro)','=',date('Y-m-d'))->count()]);
+            $indicator2->enableSection('main', ['title' => 'Extimativa faturamento semanal',   'icon' => 'money-bill-wave',      'background' => 'blue',   'value' => $sum_week]);
+            $indicator3->enableSection('main', ['title' => 'Extimativa faturamento mensal',    'icon' => 'receipt', 'background' => 'purple', 'value' => $sum_month]);
+            $indicator4->enableSection('main', ['title' => 'Extimativa faturamento anaul', 'icon' => 'wallet',       'background' => 'green',  'value' => $sum_year]);
+            
+            $chart = new THtmlRenderer('app/resources/google_column_chart.html');
+            $data[] = [ 'Mês', 'Cliente'];
+        
+            // média de ocupação mensal
+            $meses = AppUtil::calendario();
+            $objects = Quarto::getObjects();
+        
+            if($objects){
+                foreach ($objects as $key => $value) {
+                    if(empty($data_count[date_parse($value->dtcadastro)['month']])){
+                        $data_count[date_parse($value->dtcadastro)['month']] = 1 ;
+                    }else{
+                        $data_count[date_parse($value->dtcadastro)['month']] += 1 ;
+                    }
                 }
             }
             
-            // replace the main section variables
-            $chart1->enableSection('main', ['data'   => json_encode($data1),
-                                            'width'  => '100%',
-                                            'height'  => '500px',
-                                            'title'  => _t('Users by group'),
-                                            'ytitle' => _t('Users'), 
-                                            'xtitle' => _t('Count'),
-                                            'uniqid' => uniqid()]);
-            
-            $chart2 = new THtmlRenderer('app/resources/google_pie_chart.html');
-            $data2 = [];
-            $data2[] = [ 'Unit', 'Users' ];
-            
-            $stats2 = SystemUserUnit::groupBy('system_unit_id')->countBy('system_user_id', 'count');
-            
-            if ($stats2)
-            {
-                foreach ($stats2 as $row)
-                {
-                    $data2[] = [ SystemUnit::find($row->system_unit_id)->name, (int) $row->count];
-                }
+            foreach($data_count as $key => $value){
+                $data[] = [ Convert::rMes($key),   $value];
             }
+            
             // replace the main section variables
-            $chart2->enableSection('main', ['data'   => json_encode($data2),
-                                            'width'  => '100%',
-                                            'height'  => '500px',
-                                            'title'  => _t('Users by unit'),
-                                            'ytitle' => _t('Users'), 
-                                            'xtitle' => _t('Count'),
-                                            'uniqid' => uniqid()]);
+            $chart->enableSection('main', array('data'   => json_encode($data),
+                                    'width'  => '100%',
+                                    'height'  => '300px',
+                                    'title'  => 'Média de ocupação mensal',
+                                    'ytitle' => 'Clientes', 
+                                    'xtitle' => 'Mês',
+                                    'uniqid' => uniqid()));
             
             $html->enableSection('main', ['indicator1' => $indicator1,
                                           'indicator2' => $indicator2,
                                           'indicator3' => $indicator3,
                                           'indicator4' => $indicator4,
-                                          'chart1'     => $chart1,
-                                          'chart2'     => $chart2] );
+                                          'chart1'     => $chart,
+                                          'chart2'     => ''] );
             
             $container = new TVBox;
             $container->style = 'width: 100%';

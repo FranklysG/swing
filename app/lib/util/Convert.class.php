@@ -115,7 +115,7 @@ class Convert
     // de datas BR para US
     public static function toDateUS($value)
     {
-        $date = DateTime::createFromFormat( 'd/m/Y', $value );
+        $date = DateTime::createFromFormat( 'd-mY', $value );
         return $date->format('Y-m-d');
     }
 
@@ -129,7 +129,7 @@ class Convert
     public static function toDatTimeUS($value)
     {
         $date = new DateTime($value);
-        return $date->format('Y-m-d H:i');
+        return $date->format('Y-m-d');
     }
 
     public static function toDateTimeBR($value)
@@ -139,10 +139,10 @@ class Convert
     }
 
     // pegar o mes o dia ou ano da data us
-    public static function toSeparatorDate($value){
+    public static function toSeparatorDateUS($value){
         if($value != " "){
             $dia_mes_ano = explode('-', $value);
-            return $dia_mes_ano[0].'-'.$dia_mes_ano[1];
+            return $dia_mes_ano;
         }else{
             return ' ';
         }
@@ -207,5 +207,38 @@ class Convert
         $win = TWindow::create($window_name, 0.6, 0.8);
         $win->add('<pre>'.str_replace("\n", '<br>', print_r($param, true)).'</pre>');
         $win->show();
+    }
+
+    public static function rMes($string , $value = 'm'){
+        $meses = [
+            "01" => 'Jan',
+            "02" => 'Fev',
+            "03" => 'Mar',
+            "04" => 'Abr',
+            "05" => 'Mai',
+            "06" => 'Jun',
+            "07" => 'Jul',
+            "08" => 'Ago',
+            "09" => 'Set',
+            "10" => 'Out',
+            "11" => 'Nov',
+            "12" => 'Dez'
+            
+        ];
+
+        if(!empty($value)){
+            foreach ($meses as $key => $value) {
+               if($string == $key){
+                    return $value;
+               }
+            }
+        }else{
+            foreach ($meses as $key => $value) {
+                if($string == $key){
+                     return $key;
+                }
+             }
+        }
+ 
     }
 }

@@ -34,12 +34,11 @@ class ReservaList extends TPage
 
 
         // add the fields
-        $row = $this->form->addFields( [ new TLabel('QUARTO'), $quarto_id],
-                                [ new TLabel('HORARIO DA RESERVA'), $hora],
+        $row = $this->form->addFields( 
                                 [ new TLabel('STATUS'), $status],
                                 [ new TLabel('DATA'), $dtcadastro ]
                              );
-        $row->layout = ['col-sm-3','col-sm-3','col-sm-3','col-sm-3'];
+        $row->layout = ['col-sm-3','col-sm-3'];
 
         
         // keep the form filled during navigation with session data
@@ -58,19 +57,40 @@ class ReservaList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'ID', 'right');
-        $column_quarto_id = new TDataGridColumn('quarto_id', 'QUARTO', 'right');
-        $column_hora_a = new TDataGridColumn('hora_a', 'HORA ABERTURA', 'right');
-        $column_hora_f = new TDataGridColumn('hora_f', 'HORA FECHAMENTO', 'right');
+        $column_id = new TDataGridColumn('id', 'ID', 'left');
+        $column_faturamento = new TDataGridColumn('faturamento_dia', 'FATURAMENTO', 'left');
         $column_status = new TDataGridColumn('status', 'STATUS', 'left');
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'left');
+        
+        $column_faturamento->setTransformer(function ($value) {
+            return Convert::toMonetario($value);
+        });
+        
+        $column_status->setTransformer(function ($value) {
+           
+            if ($value == 0) {
+                $class = 'success';
+                $label = 'ABERTO';
+            } 
+            else if ($value == 1) {
+                $class = 'danger';
+                $label = 'FINALIZADO';
+            }
 
+            $div = new TElement('span');
+            $div->class = "btn btn-{$class}";
+            $div->style = "text-shadow:none; font-size:12px; font-weight:lighter;width:100px;";
+            $div->add($label);
+            return $div;
+        });
+
+        $column_dtcadastro->setTransformer(function ($value) {
+            return Convert::toDateBR($value);
+        });
 
         // add the columns to the DataGrid
         $this->datagrid->addColumn($column_id);
-        // $this->datagrid->addColumn($column_quarto_id);
-        $this->datagrid->addColumn($column_hora_a);
-        $this->datagrid->addColumn($column_hora_f);
+        $this->datagrid->addColumn($column_faturamento);
         $this->datagrid->addColumn($column_status);
         $this->datagrid->addColumn($column_dtcadastro);
 
@@ -186,9 +206,27 @@ class ReservaList extends TPage
             // open a transaction with database 'app'
             TTransaction::open('app');
             
+            // criar nova reserva automarica
+            // abre e fecha sempre as meia noite
+            // status 0 -> aberto 
+            $reserva = Reserva::where('date(dtcadastro)','=',date('Y-m-d'))->first();
+            if(!isset($reserva)){
+                $reserva = new Reserva;
+                $reserva->usuario_id = TSession::getValue('userid');
+                $reserva->status = 0;
+                $reserva->store();
+            }
+            $reserva = Reserva::where('date(dtcadastro)','=',date('Y-m-d', strtotime('-1 day')))->first();
+            if(isset($reserva)){
+                $reserva->status = 1;
+                $reserva->store();
+            }
+
+
             // creates a repository for Reserva
             $repository = new TRepository('Reserva');
             $limit = 10;
+
             // creates a criteria
             $criteria = new TCriteria;
             
@@ -196,7 +234,7 @@ class ReservaList extends TPage
             if (empty($param['order']))
             {
                 $param['order'] = 'id';
-                $param['direction'] = 'asc';
+                $param['direction'] = 'desc';
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
@@ -233,9 +271,19 @@ class ReservaList extends TPage
             $this->datagrid->clear();
             if ($objects)
             {
+                $quarto_valor = 0;
                 // iterate the collection of active records
                 foreach ($objects as $object)
                 {
+                    $object->faturamento_dia = 0;
+                    $quartos = Quarto::where('reserva_id','=',$object->id)->load();
+                    if($quartos){
+                        foreach($quartos as $value){
+                            $quarto_valor += $value->valor;
+                            $object->faturamento_dia = $quarto_valor;
+                        }
+                    }
+
                     // add the object inside the datagrid
                     $this->datagrid->addItem($object);
                 }

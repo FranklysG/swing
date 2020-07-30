@@ -20,8 +20,6 @@ class Reserva extends TRecord
     {
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('usuario_id');
-        parent::addAttribute('hora_a');
-        parent::addAttribute('hora_f');
         parent::addAttribute('status');
         parent::addAttribute('dtcadastro');
     }
