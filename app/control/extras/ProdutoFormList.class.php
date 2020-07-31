@@ -55,7 +55,7 @@ class ProdutoFormList extends TPage
         // create the form actions
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'),  new TAction([$this, 'onEdit']), 'fa:eraser red');
+        // $this->form->addActionLink(_t('New'),  new TAction([$this, 'onEdit']), 'fa:eraser red');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -65,10 +65,10 @@ class ProdutoFormList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_nome = new TDataGridColumn('nome', 'Nome', 'left');
-        $column_valor = new TDataGridColumn('valor', 'Valor', 'left');
-        $column_dtcadastro = new TDataGridColumn('dtcadastro', 'Dtcadastro', 'left');
+        $column_id = new TDataGridColumn('id', 'ID', 'left');
+        $column_nome = new TDataGridColumn('nome', 'NOME PRODUTO', 'left');
+        $column_valor = new TDataGridColumn('valor', 'VALOR', 'left');
+        $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'left');
 
         $column_valor->setTransformer(function ($value) {
             return Convert::toMonetario($value);
@@ -249,8 +249,8 @@ class ProdutoFormList extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved')); // success message
-            $this->onReload(); // reload the listing
+            new TMessage('info', 'Salvo com sucesso', new TAction([$this, 'onReload'])); // success message
+            // $this->onReload(); // reload the listing
         }
         catch (Exception $e) // in case of exception
         {

@@ -990,11 +990,12 @@ table.tfieldlist.dashed .tfield:focus {
 div[form=form_login] .panel-heading
 {
     align-content: center;
-    background: #3c8dbc !important;
+    border:none;
+    background: #fff !important;
     color: white !important;
     display: flex;
     justify-content: center;
-    height: 60px !important;
+    height: 70px !important;
     width: 100%;
 }
 

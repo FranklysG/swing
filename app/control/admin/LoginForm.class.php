@@ -26,15 +26,15 @@ class LoginForm extends TPage
         $this->style = 'clear:both';
         // creates the form
         $this->form = new BootstrapFormBuilder('form_login');
-        $this->form->setFormTitle( 'LOG IN' );
+        $this->form->setFormTitle( '<br><img src="tmp/psrita.png" style="width:120px;">' );
         
         // create the form fields
         $login = new TEntry('login');
         $password = new TPassword('password');
         
         // define the sizes
-        $login->setSize('70%', 40);
-        $password->setSize('70%', 40);
+        $login->setSize('70%');
+        $password->setSize('70%');
 
         $login->style = 'height:35px; font-size:14px;float:left;border-bottom-left-radius: 0;border-top-left-radius: 0;';
         $password->style = 'height:35px;font-size:14px;float:left;border-bottom-left-radius: 0;border-top-left-radius: 0;';
@@ -73,7 +73,7 @@ class LoginForm extends TPage
         }
         
         $btn = $this->form->addAction(_t('Log in'), new TAction(array($this, 'onLogin')), '');
-        $btn->class = 'btn btn-primary';
+        $btn->class = 'btn btn-success';
         $btn->style = 'height: 40px;width: 90%;display: block;margin: auto;font-size:17px;';
         
         $wrapper = new TElement('div');
@@ -208,7 +208,7 @@ class LoginForm extends TPage
      */
     public function onLoad($param)
     {
-        var_dump($param);
+        
     }
     
     /**

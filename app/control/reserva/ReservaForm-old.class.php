@@ -35,7 +35,14 @@ class ReservaForm extends TPage
         $detail_dtcadastro = new THidden('detail_dtcadastro');
         
         $detail_produto_id   = new TDBCheckGroup('detail_produto_id', 'app', 'Produto', 'id', 'nome');
-    
+        $detail_produto_id->setLayout('horizontal');
+        if ($detail_produto_id->getLabels()) {
+            foreach ($detail_produto_id->getLabels() as $key => $label) {
+                $label->setSize(170);
+                $label->style = "margin-top: 5px;";
+            }
+        }
+        
         if (!empty($id))
         {
             $id->setEditable(FALSE);
@@ -56,7 +63,11 @@ class ReservaForm extends TPage
                                         [new TLabel(''), $detail_dtcadastro] );
         
         $row->layout = ['col-sm-3','col-sm-3','col-sm-3','col-sm-2','col-sm-2'];
-       
+        
+        $this->form->addContent( ['<strong>PRODUTOS</strong><hr>']);
+        $this->form->addFields( [$detail_produto_id] );
+        $this->form->addContent( ['<br>']);
+        
         $this->detail_list = new BootstrapDatagridWrapper(new TDataGrid);
         $this->detail_list->setId('Quarto_list');
         $this->detail_list->generateHiddenFields();
@@ -101,19 +112,15 @@ class ReservaForm extends TPage
         $this->detail_list->addColumn( $column_dtcadastro );
 
         // detail actions
-        $action2 = new TDataGridAction([$this, 'onDetailEdit'] );
-        $action2->setFields( ['uniqid', '*'] );
+        $action1 = new TDataGridAction([$this, 'onDetailEdit'] );
+        $action1->setFields( ['uniqid', '*'] );
         
-        $action1 = new TDataGridAction([$this, 'onDetailDelete']);
-        $action1->setFields(['uniqid', '*']);
-        
-        $action3 = new TDataGridAction(['CartProdutoList', 'onReload']);
-        $action3->setFields(['uniqid', '*']);
+        $action2 = new TDataGridAction([$this, 'onDetailDelete']);
+        $action2->setFields(['uniqid', '*']);
         
         // add the actions to the datagrid
-        $this->detail_list->addAction($action3, 'Produtos', 'fa:cart-plus green');
-        $this->detail_list->addAction($action2, _t('Edit'), 'fa:edit blue');
-        $this->detail_list->addAction($action1, _t('Delete'), 'far:trash-alt red');
+        $this->detail_list->addAction($action1, _t('Edit'), 'fa:edit blue');
+        $this->detail_list->addAction($action2, _t('Delete'), 'far:trash-alt red');
         
         $this->detail_list->createModel();
         

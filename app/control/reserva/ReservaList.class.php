@@ -22,7 +22,7 @@ class ReservaList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Reserva');
-        $this->form->setFormTitle('Reserva');
+        $this->form->setFormTitle('LISTAGEM DE RESERVAS');
         $this->form->setFieldSizes('100%');
         
 
@@ -94,12 +94,14 @@ class ReservaList extends TPage
         $this->datagrid->addColumn($column_status);
         $this->datagrid->addColumn($column_dtcadastro);
 
-
         $action1 = new TDataGridAction(['ReservaForm', 'onEdit'], ['id'=>'{id}']);
-        $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
-        
+        $action1->setDisplayCondition( array($this, 'displayColumn') );
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
-        $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
+        
+        $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
+        if(TSession::getValue('userid') == 1){
+            $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
+        }
         
         // create the datagrid model
         $this->datagrid->createModel();
@@ -118,7 +120,7 @@ class ReservaList extends TPage
         
         parent::add($container);
     }
-    
+
     /**
      * Inline record editing
      * @param $param Array containing:
@@ -126,6 +128,17 @@ class ReservaList extends TPage
      *              field name: object attribute to be updated
      *              value: new attribute content 
      */
+
+    public function displayColumn( $object )
+    {
+        if (Convert::toDateBR($object->dtcadastro) == date('d/m/Y'))
+        {
+            return TRUE;
+        }
+        return FALSE;
+    }
+
+
     public function onInlineEdit($param)
     {
         try
