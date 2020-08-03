@@ -23,44 +23,75 @@ class CartProdutoList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_cart_produto_list');
-        $this->form->style = "width: 100%;position: fixed;bottom: 0px;";
-       
+        $this->form->style = "width: 100%;height:70px;";
+        
         // master fields
         $id = new THidden('id');
-        $this->form->addFields([$id]);
-      
-        // add the search form actions
-        $btn = $this->form->addActionLink('Adicionar', new TAction([$this, 'onSearch']), 'fa:plus');
-        $btn->class = 'btn btn-sm btn-primary';
+        $n_quarto = new THidden('n_quarto');
+        $valor = new THidden('valor');
+        $detail_n_quarto = new TEntry('detail_n_quarto');
+        $detail_n_quarto->addValidation('Numero do quarto', new TRequiredValidator);
+        $detail_n_quarto->setEditable(FALSE);
+        $detail_valor = new TEntry('detail_valor');
+        $detail_valor->setMask('9!');
+        $detail_valor->setNumericMask(2,',','.', true);
+        $detail_valor->setEditable(FALSE);
         
-        $back = $this->form->addActionLink('Fechar', new TAction(array($this, 'onClose')), 'fa:times red');
-        $back->class = 'btn btn-default btn-sm';
+        $this->form->addFields([$id,$n_quarto,$valor]);
+        $row = $this->form->addFields( [new TLabel('NUMERO DO QUARTO'), $detail_n_quarto],
+                                        [new TLabel('VALOR'), $detail_valor]
+                                        );
         
-        // $this->form->addAction('Limpar', new TAction(['ReservaForm', 'onEdit']), 'fa:trash red');
+        $row->layout = ['col-sm-6','col-sm-6'];
 
+       
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
         
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'right');
+        $column_id = new TDataGridColumn('id', 'Id', 'left');
         $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
-        $column_input_qtd = new TDataGridColumn('input_qtd', 'QUANTIDADE', 'right');
-        $column_valor = new TDataGridColumn('valor', 'VALOR', 'right');
+        $column_qtd = new TDataGridColumn('qtd', 'QTD', 'left');
+        $column_check = new TDataGridColumn('check', '', 'left');
+        $column_valor = new TDataGridColumn('valor', 'VALOR', 'left');
+
+        $column_check->setTransformer( function($value, $object, $row) {
+            $class = 'danger';
+            $label = 'NÃO';
+            if ($value == 1) {
+                $class = 'success';
+                $label = 'SIM';
+            }
+
+            $div = new TElement('span');
+            $div->class = "btn btn-{$class}";
+            $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:80px;";
+            $div->add($label);
+            return $div;
+        });
+
+        $column_valor->setTransformer(function ($value) {
+            return Convert::toMonetario($value);
+        });
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
         $this->datagrid->addColumn($column_nome);
+        $this->datagrid->addColumn($column_qtd);
+        $this->datagrid->addColumn($column_check);
         $this->datagrid->addColumn($column_valor);
-        $this->datagrid->addColumn($column_input_qtd);
 
 
-        // $action1 = new TDataGridAction(['ReservaForm', 'onEdit'], ['id'=>'{id}']);
-        // $action2 = new TDataGridAction([$this, 'onSearch'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction([$this, 'onAddItem'],['static'=>'1']);
+        $action1->setFields(['id', 'valor']);
+        $action2 = new TDataGridAction([$this, 'onDelItem'],['static'=>'1']);
+        $action2->setDisplayCondition( array($this, 'displayColumn') );
+        $action2->setFields(['id', 'valor']);
         
-        // $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
-        // $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
+        $this->datagrid->addAction($action1, 'adicionar',   'fa:plus-circle green');
+        $this->datagrid->addAction($action2 ,'remover', 'fa:minus-circle red');
         
         // create the datagrid model
         $this->datagrid->createModel();
@@ -70,15 +101,33 @@ class CartProdutoList extends TPage
         $this->pageNavigation->setAction(new TAction([$this, 'onReload']));
         $this->pageNavigation->setWidth($this->datagrid->getWidth());
         
+        $panel = new TPanelGroup('<strong>CARRINHO - ' . date('d/m/y').'</strong>');
+        $panel->add($this->form);
+        $panel->add($this->datagrid);
+        // $panel->addHeaderActionLink('', new TAction([$this, 'onSave'], ['register_state' => 'false']), 'fa:cart-plus green');
+        $panel->addHeaderActionLink('', new TAction([$this, 'onClose']), 'fa:times red');
+        $panel->getBody()->style = "overflow-x:auto;";
+        $panel->addFooter($this->pageNavigation);
+
         // vertical box container
         $container = new TVBox;
         $container->style = 'width: 100%';
-        $container->add(TPanelGroup::pack('CARRINHO DE PRODUTOS',$this->datagrid));
-        $container->add($this->form);
+        // $container->add(TPanelGroup::pack('CARRINHO DE PRODUTOS',$this->datagrid, $this->pageNavigation));
+        $container->add($panel);
         
         parent::add($container);
+
     }
     
+    public function displayColumn( $object )
+    {
+        if ($object->check == 1)
+        {
+            return TRUE;
+        }
+        return FALSE;
+    }
+
     /**
      * Inline record editing
      * @param $param Array containing:
@@ -95,10 +144,6 @@ class CartProdutoList extends TPage
         // get the search form data
         $data = $this->form->getData();
         
-        // clear session filters
-
-
-        
         // fill the form with data again
         $this->form->setData($data);
         
@@ -111,6 +156,68 @@ class CartProdutoList extends TPage
         $this->onReload($param);
     }
     
+    public function onAddItem($param)
+    {
+        try {
+            TTransaction::open('app');
+            
+            $data = TSession::getValue('form_cart_produto_list_obj');
+            if(isset($data)){
+                $quarto = Quarto::find($data->id_quarto);
+                $quarto->valor += $param['valor'];
+                $quarto->store(); 
+                
+                $consumo = new Consumo;
+                $consumo->produto_id = $param['id'];
+                $consumo->quarto_id = $data->id_quarto;
+                $consumo->store();
+                
+                $data->detail_valor = $quarto->valor;;
+                $obj = new stdClass;
+                $obj->check = 1;
+                TForm::sendData('form_cart_produto_list', $obj, false, false);
+                TSession::setValue('form_cart_produto_list_obj', $data);
+                
+                TScript::create("__adianti_load_page('index.php?class=CartProdutoList&method=onReload&register_state=false');");
+            }
+            TTransaction::close();
+        }  catch (Exception $e)
+        {
+            new TMessage('error', $e->getMessage());
+            TTransaction::rollback();
+        }
+       
+    }
+
+    public function onDelItem($param)
+    {
+        try {
+            TTransaction::open('app');
+            
+            $data = TSession::getValue('form_cart_produto_list_obj');
+            $quarto = Quarto::find($data->id_quarto);
+            $quarto->valor -= $param['valor'];
+            $quarto->store(); 
+            
+            $consumo = Consumo::where('quarto_id','=',$data->id_quarto)
+                                        ->where('produto_id','=',$param['id'])->first();
+
+            $consumo->delete();
+            $obj = $data;
+            $obj->detail_valor = $quarto->valor;
+            $obj->check = 0;
+            TForm::sendData('form_cart_produto_list', $obj, false, false);
+            TSession::setValue('form_cart_produto_list_obj', $obj);
+            
+            TScript::create("__adianti_load_page('index.php?class=CartProdutoList&method=onReload&register_state=false');");
+            TTransaction::close();
+        }  catch (Exception $e)
+        {
+            new TMessage('error', $e->getMessage());
+            TTransaction::rollback();
+        }
+        
+    }
     /**
      * Load the datagrid with data
      */
@@ -118,8 +225,23 @@ class CartProdutoList extends TPage
     {
         try
         {
-            // open a transaction with database 'app'
+            
             TTransaction::open('app');
+            $data = TSession::getValue('form_cart_produto_list_obj');
+            // verificar se vem a sessão dos additens la em cima
+            if(!isset($data)){
+                $key = $param['id_quarto'];
+                $obj = Quarto::find($key);
+                $obj->id_quarto = $key;
+                $obj->detail_n_quarto = $obj->n_quarto;
+                $obj->detail_valor = $obj->valor;
+                $this->form->setData($obj);
+                TSession::setValue('form_cart_produto_list_obj',$obj);
+            }else{
+                $this->form->setData(TSession::getValue('form_cart_produto_list_obj'));
+               
+            }
+           
             
             // creates a repository for Produto
             $repository = new TRepository('Produto');
@@ -147,12 +269,35 @@ class CartProdutoList extends TPage
             }
             
             $this->datagrid->clear();
+            
+            $ids = [];
+            
+            ($data)?
+                $id_quarto = $data->id_quarto
+            :
+                $id_quarto = $param['id_quarto']
+            ;
+            
+            $consumos = Consumo::where('quarto_id','=',$id_quarto)->load();
+            if(isset($consumos)){
+                foreach ($consumos as $value) {
+                    $ids[] = $value->produto_id;
+                }
+            }
+                  
             if ($objects)
             {
-                // iterate the collection of active records
                 foreach ($objects as $object)
                 {
-                    // add the object inside the datagrid
+                    // iterate the collection of active records
+                    $object->qtd = 0;
+                    $object->check = 0;
+                    foreach ($ids as $value) {
+                        if($object->id == $value){
+                            $object->qtd += 1;
+                            $object->check = 1;
+                        }
+                    }
                     $this->datagrid->addItem($object);
                 }
             }
@@ -168,6 +313,7 @@ class CartProdutoList extends TPage
             // close the transaction
             TTransaction::close();
             $this->loaded = true;
+
         }
         catch (Exception $e)
         {
@@ -179,6 +325,7 @@ class CartProdutoList extends TPage
     public static function onClose($param)
     {
         TScript::create("Template.closeRightPanel()");
+        TApplication::loadPage('ReservaForm','onEdit',['key' => TSession::getValue('form_reserva_form_id')]);
     }
 
     /**

@@ -17,7 +17,7 @@ class ReservaForm extends TPage
         
         
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_Reserva');
+        $this->form = new BootstrapFormBuilder('form_reserva_form');
         $this->form->setFormTitle('QUARTOS OCUPADOS HOJE - '.date('d/m/Y'));
         $this->form->setFieldSizes('100%');
         
@@ -107,13 +107,16 @@ class ReservaForm extends TPage
         $action1 = new TDataGridAction([$this, 'onDetailDelete']);
         $action1->setFields(['uniqid', '*']);
         
-        $action3 = new TDataGridAction(['CartProdutoList', 'onReload']);
-        $action3->setFields(['uniqid', '*']);
+        $action3 = new TDataGridAction(['CartProdutoList', 'onReload'],['id_quarto' => '{id}']);
         
-        // add the actions to the datagrid
         $this->detail_list->addAction($action3, 'Produtos', 'fa:cart-plus green');
-        $this->detail_list->addAction($action2, _t('Edit'), 'fa:edit blue');
         $this->detail_list->addAction($action1, _t('Delete'), 'far:trash-alt red');
+        if(TSession::getValue('userid') == 1){
+            // add the actions to the datagrid
+            $this->detail_list->addAction($action2, _t('Edit'), 'fa:edit blue');
+        }
+
+        
         
         $this->detail_list->createModel();
         
@@ -252,9 +255,10 @@ class ReservaForm extends TPage
         try
         {
             TTransaction::open('app');
-            
+            TSession::setValue('form_cart_produto_list_obj', null);
             if (isset($param['key']))
             {
+                TSession::setValue('form_reserva_form_id',$param['key']);
                 $key = $param['key'];
                 
                 $object = new Reserva($key);

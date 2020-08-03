@@ -33,7 +33,7 @@ class SystemAdministrationDashboard extends TPage
             $week_open = date('Y-m-d', strtotime('-1 week'));
             $month_open = date('Y-m-01');
             $month_close = date('Y-m-30');
-            $year_open = date('Y-01-01', strtotime('-1 year'));
+            $year_open = date('Y-01-01');
             $year_close = date('Y-12-30');
             
             // quartos semanais
@@ -53,11 +53,11 @@ class SystemAdministrationDashboard extends TPage
             $criteria_year = new TCriteria;
             $criteria_year->add(new TFilter('date(dtcadastro)', 'between', "{$year_open}", "{$year_close}"));
             $sum_year = $repositoy_year->sum($criteria_year, ['valor' => 'valor']);
-
+            
             $indicator1->enableSection('main', ['title' => 'Ocupados Hoje',    'icon' => 'users',       'background' => 'orange', 'value' => Quarto::where('date(dtcadastro)','=',date('Y-m-d'))->count()]);
-            $indicator2->enableSection('main', ['title' => 'Extimativa faturamento semanal',   'icon' => 'money-bill-wave',      'background' => 'blue',   'value' => $sum_week]);
-            $indicator3->enableSection('main', ['title' => 'Extimativa faturamento mensal',    'icon' => 'receipt', 'background' => 'purple', 'value' => $sum_month]);
-            $indicator4->enableSection('main', ['title' => 'Extimativa faturamento anaul', 'icon' => 'wallet',       'background' => 'green',  'value' => $sum_year]);
+            $indicator2->enableSection('main', ['title' => 'Extimativa faturamento semanal',   'icon' => 'money-bill-wave',      'background' => 'blue',   'value' => Convert::toMonetario($sum_week)]);
+            $indicator3->enableSection('main', ['title' => 'Extimativa faturamento mensal',    'icon' => 'receipt', 'background' => 'purple', 'value' => Convert::toMonetario($sum_month)]);
+            $indicator4->enableSection('main', ['title' => 'Extimativa faturamento anaul', 'icon' => 'wallet',       'background' => 'green',  'value' => Convert::toMonetario($sum_year)]);
             
             $chart = new THtmlRenderer('app/resources/google_column_chart.html');
             $data[] = [ 'Mês', 'Cliente'];
