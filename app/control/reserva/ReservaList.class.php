@@ -284,11 +284,11 @@ class ReservaList extends TPage
             $this->datagrid->clear();
             if ($objects)
             {
-                $quarto_valor = 0;
                 // iterate the collection of active records
                 foreach ($objects as $object)
                 {
                     $object->faturamento_dia = 0;
+                    $quarto_valor = 0;
                     $quartos = Quarto::where('reserva_id','=',$object->id)->load();
                     if($quartos){
                         foreach($quartos as $value){

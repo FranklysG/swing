@@ -108,6 +108,7 @@ class ReservaForm extends TPage
         $action1->setFields(['uniqid', '*']);
         
         $action3 = new TDataGridAction(['CartProdutoList', 'onReload'],['id_quarto' => '{id}']);
+        $action3->setDisplayCondition( array($this, 'displayColumn') );
         
         $this->detail_list->addAction($action3, 'Produtos', 'fa:cart-plus green');
         $this->detail_list->addAction($action1, _t('Delete'), 'far:trash-alt red');
@@ -125,8 +126,8 @@ class ReservaForm extends TPage
         $panel->getBody()->style = 'overflow-x:auto';
         $this->form->addContent( [$panel] );
         
-        $this->form->addAction( 'Save',  new TAction([$this, 'onSave'], ['static'=>'1']), 'fa:save green');
-        $this->form->addAction( 'Clear', new TAction([$this, 'onClear']), 'fa:eraser red');
+        $this->form->addAction( 'Salvar',  new TAction([$this, 'onSave'], ['static'=>'1']), 'fa:save green');
+        $this->form->addAction( 'Voltar', new TAction(['ReservaList', 'onReload']), 'fa:eraser red');
         
         // create the page container
         $container = new TVBox;
@@ -136,6 +137,14 @@ class ReservaForm extends TPage
         parent::add($container);
     }
     
+    public function displayColumn( $object )
+    {
+        if (!empty($object->id))
+        {
+            return TRUE;
+        }
+        return FALSE;
+    }
     
     /**
      * Clear form
@@ -197,7 +206,6 @@ class ReservaForm extends TPage
             
             // send data, do not fire change/exit events
             TForm::sendData( 'form_Reserva', $data, false, false );
-
             TTransaction::close();
         }
         catch (Exception $e)
@@ -319,7 +327,7 @@ class ReservaForm extends TPage
             
             TForm::sendData('form_Reserva', (object) ['id' => $master_id]);
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'));
+            new TMessage('info', 'Registro salvo com sucesso', new TAction([$this, 'onEdit'],['id' => TSession::getValue('form_reserva_form_id'), 'key' => TSession::getValue('form_reserva_form_id')]));
         }
         catch (Exception $e) // in case of exception
         {
