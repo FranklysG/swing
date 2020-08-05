@@ -174,6 +174,7 @@ class ReservaForm extends TPage
             }
             **/
 
+            // soma o valor do produto e adiciona na grid 
             $produto_valor = 0;
             if(isset($param['detail_produto_id'])){
                 foreach ($param['detail_produto_id'] as $key => $value) {
@@ -234,27 +235,58 @@ class ReservaForm extends TPage
     }
     
     /**
-     * Delete detail item
-     * @param $param URL parameters
+     * Ask before deletion
      */
-    public static function onDetailDelete( $param )
+    public static function onDetailDelete($param)
     {
-        // clear detail form fields
-        $data = new stdClass;
-        $data->detail_uniqid = '';
-        $data->detail_id = '';
-        $data->detail_n_quarto = '';
-        $data->detail_valor = '';
-        $data->detail_status = '';
-        $data->detail_dtcadastro = '';
+        // define the delete action
+        $action = new TAction([__CLASS__, 'Delete']);
+        $action->setParameters($param); // pass the key parameter ahead
         
-        // send data, do not fire change/exit events
-        TForm::sendData( 'form_Reserva', $data, false, false );
-        
-        // remove row
-        TDataGrid::removeRowById('Quarto_list', $param['uniqid']);
+        // shows a dialog to the user
+        new TQuestion(AdiantiCoreTranslator::translate('Do you really want to delete ?'), $action);
     }
     
+    /**
+     * Delete a record
+     */
+    public static function Delete($param)
+    {
+        try
+        {
+            $key = $param['id']; // get the parameter $key
+            TTransaction::open('app'); // open a transaction with database
+            
+            $object = new Quarto($key, FALSE); // instantiates the Active Record
+            $object->delete(); // deletes the object from the database
+            
+            // clear detail form fields
+            $data = new stdClass;
+            $data->detail_uniqid = '';
+            $data->detail_id = '';
+            $data->detail_n_quarto = '';
+            $data->detail_valor = '';
+            $data->detail_status = '';
+            $data->detail_dtcadastro = '';
+            
+            // send data, do not fire change/exit events
+            TForm::sendData( 'form_Reserva', $data, false, false );
+            // remove row
+            TDataGrid::removeRowById('Quarto_list', $param['uniqid']);
+            
+            TTransaction::close(); // close the transaction
+            
+            $pos_action = new TAction([__CLASS__, 'onEdit'],['id' => TSession::getValue('form_reserva_form_id'), 'key' => TSession::getValue('form_reserva_form_id')]);
+            new TMessage('info', AdiantiCoreTranslator::translate('Record deleted'), $pos_action); // success message
+        }
+        catch (Exception $e) // in case of exception
+        {
+            // new TMessage('error', $e->getMessage()); // shows the exception error message
+            new TMessage('error', 'Existem produtos no carrinho ',new TAction([__CLASS__, 'onEdit'],['id' => TSession::getValue('form_reserva_form_id'), 'key' => TSession::getValue('form_reserva_form_id')])); // shows the exception error message
+            TTransaction::rollback(); // undo all pending operations
+        }
+    }
+   
     /**
      * Load Master/Detail data from database to form
      */
@@ -308,14 +340,16 @@ class ReservaForm extends TPage
             
             $data = $this->form->getData();
             // $this->form->validate();
-            
-            Quarto::where('reserva_id', '=', $master_id)->delete();
-            
-            if( isset($param['Quarto_list_n_quarto']) )
+
+            if( isset($param['Quarto_list_id']) )
             {
-                foreach( $param['Quarto_list_n_quarto'] as $key => $item_id )
+                foreach( $param['Quarto_list_id'] as $key => $item_id )
                 {
-                    $detail = new Quarto;
+                    $detail = Quarto::where('reserva_id', '=', $master_id)
+                                    ->where('id','=',$param['Quarto_list_id'][$key])->first();
+
+                    if(!$detail)
+                        $detail = new Quarto;
                     $detail->n_quarto  = $param['Quarto_list_n_quarto'][$key];
                     $detail->valor  = $param['Quarto_list_valor'][$key];
                     $detail->status  = $param['Quarto_list_status'][$key];

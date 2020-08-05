@@ -324,9 +324,9 @@ class CartProdutoList extends TPage
     
     public static function onClose($param)
     {
+        new TMessage('info', 'Produto(s) adicionados', new TAction(['ReservaForm', 'onEdit'],['id' => TSession::getValue('form_reserva_form_id'), 'key' => TSession::getValue('form_reserva_form_id')]));
         TScript::create("Template.closeRightPanel()");
         // TApplication::loadPage('ReservaForm','onEdit',['key' => TSession::getValue('form_reserva_form_id')]);
-        new TMessage('info', 'Produto(s) adicionados', new TAction(['ReservaForm', 'onEdit'],['id' => TSession::getValue('form_reserva_form_id'), 'key' => TSession::getValue('form_reserva_form_id')]));
     }
 
     /**
