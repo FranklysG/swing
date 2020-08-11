@@ -10,8 +10,8 @@ class Consumo extends TRecord
     const IDPOLICY =  'max'; // {max, serial}
     
     
+    private $mapa_reserva;
     private $produto;
-    private $quarto;
 
     /**
      * Constructor method
@@ -19,11 +19,38 @@ class Consumo extends TRecord
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
+        parent::addAttribute('mapa_reserva_id');
         parent::addAttribute('produto_id');
-        parent::addAttribute('quarto_id');
         parent::addAttribute('dtcadastro');
     }
 
+    
+    /**
+     * Method set_mapa_reserva
+     * Sample of usage: $consumo->mapa_reserva = $object;
+     * @param $object Instance of MapaReserva
+     */
+    public function set_mapa_reserva(MapaReserva $object)
+    {
+        $this->mapa_reserva = $object;
+        $this->mapa_reserva_id = $object->id;
+    }
+    
+    /**
+     * Method get_mapa_reserva
+     * Sample of usage: $consumo->mapa_reserva->attribute;
+     * @returns MapaReserva instance
+     */
+    public function get_mapa_reserva()
+    {
+        // loads the associated object
+        if (empty($this->mapa_reserva))
+            $this->mapa_reserva = new MapaReserva($this->mapa_reserva_id);
+    
+        // returns the associated object
+        return $this->mapa_reserva;
+    }
+    
     
     /**
      * Method set_produto
@@ -49,33 +76,6 @@ class Consumo extends TRecord
     
         // returns the associated object
         return $this->produto;
-    }
-    
-    
-    /**
-     * Method set_quarto
-     * Sample of usage: $consumo->quarto = $object;
-     * @param $object Instance of Quarto
-     */
-    public function set_quarto(Quarto $object)
-    {
-        $this->quarto = $object;
-        $this->quarto_id = $object->id;
-    }
-    
-    /**
-     * Method get_quarto
-     * Sample of usage: $consumo->quarto->attribute;
-     * @returns Quarto instance
-     */
-    public function get_quarto()
-    {
-        // loads the associated object
-        if (empty($this->quarto))
-            $this->quarto = new Quarto($this->quarto_id);
-    
-        // returns the associated object
-        return $this->quarto;
     }
     
 

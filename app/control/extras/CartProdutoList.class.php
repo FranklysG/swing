@@ -30,7 +30,7 @@ class CartProdutoList extends TPage
         $n_quarto = new THidden('n_quarto');
         $valor = new THidden('valor');
         $detail_n_quarto = new TEntry('detail_n_quarto');
-        $detail_n_quarto->addValidation('Numero do quarto', new TRequiredValidator);
+        $detail_n_quarto->addValidation('Numero do mapa_reserva', new TRequiredValidator);
         $detail_n_quarto->setEditable(FALSE);
         $detail_valor = new TEntry('detail_valor');
         $detail_valor->setMask('9!');
@@ -163,16 +163,18 @@ class CartProdutoList extends TPage
             
             $data = TSession::getValue('form_cart_produto_list_obj');
             if(isset($data)){
-                $quarto = Quarto::find($data->id_quarto);
-                $quarto->valor += $param['valor'];
-                $quarto->store(); 
+                // atualiza o valor do mapa_reserva de acordo com a adição do produto
+                $mapa_reserva = MapaReserva::find($data->id_mapa_reserva);
+                $mapa_reserva->valor += $param['valor'];
+                $mapa_reserva->store(); 
                 
+                // incrementa o produto na tabela de consumo
                 $consumo = new Consumo;
                 $consumo->produto_id = $param['id'];
-                $consumo->quarto_id = $data->id_quarto;
+                $consumo->mapa_reserva_id = $data->id_mapa_reserva;
                 $consumo->store();
                 
-                $data->detail_valor = $quarto->valor;;
+                $data->detail_valor = $mapa_reserva->valor;;
                 $obj = new stdClass;
                 $obj->check = 1;
                 TForm::sendData('form_cart_produto_list', $obj, false, false);
@@ -194,17 +196,20 @@ class CartProdutoList extends TPage
         try {
             TTransaction::open('app');
             
+            // atualiza o valor do mapa_reserva de acordo com a remoção do produto
             $data = TSession::getValue('form_cart_produto_list_obj');
-            $quarto = Quarto::find($data->id_quarto);
-            $quarto->valor -= $param['valor'];
-            $quarto->store(); 
+            $mapa_reserva = MapaReserva::find($data->id_mapa_reserva);
+            $mapa_reserva->valor -= $param['valor'];
+            $mapa_reserva->store(); 
             
-            $consumo = Consumo::where('quarto_id','=',$data->id_quarto)
+            // Remove o produto selecionado
+            $consumo = Consumo::where('mapa_reserva_id','=',$data->id_mapa_reserva)
                                         ->where('produto_id','=',$param['id'])->first();
 
             $consumo->delete();
+            
             $obj = $data;
-            $obj->detail_valor = $quarto->valor;
+            $obj->detail_valor = $mapa_reserva->valor;
             $obj->check = 0;
             TForm::sendData('form_cart_produto_list', $obj, false, false);
             TSession::setValue('form_cart_produto_list_obj', $obj);
@@ -230,9 +235,9 @@ class CartProdutoList extends TPage
             $data = TSession::getValue('form_cart_produto_list_obj');
             // verificar se vem a sessão dos additens la em cima
             if(!isset($data)){
-                $key = $param['id_quarto'];
-                $obj = Quarto::find($key);
-                $obj->id_quarto = $key;
+                $key = $param['id_mapa_reserva'];
+                $obj = MapaReserva::find($key);
+                $obj->id_mapa_reserva = $key;
                 $obj->detail_n_quarto = $obj->n_quarto;
                 $obj->detail_valor = $obj->valor;
                 $this->form->setData($obj);
@@ -273,12 +278,12 @@ class CartProdutoList extends TPage
             $ids = [];
             
             ($data)?
-                $id_quarto = $data->id_quarto
+                $id_mapa_reserva = $data->id_mapa_reserva
             :
-                $id_quarto = $param['id_quarto']
+                $id_mapa_reserva = $param['id_mapa_reserva']
             ;
             
-            $consumos = Consumo::where('quarto_id','=',$id_quarto)->load();
+            $consumos = Consumo::where('mapa_reserva_id','=',$id_mapa_reserva)->load();
             if(isset($consumos)){
                 foreach ($consumos as $value) {
                     $ids[] = $value->produto_id;

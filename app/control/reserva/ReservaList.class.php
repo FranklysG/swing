@@ -27,7 +27,7 @@ class ReservaList extends TPage
         
 
         // create the form fields
-        $quarto_id = new TEntry('quarto_id');
+        $mapa_reserva_id = new TEntry('mapa_reserva_id');
         $hora = new TEntry('hora');
         $status = new TEntry('status');
         $dtcadastro = new TEntry('dtcadastro');
@@ -173,7 +173,7 @@ class ReservaList extends TPage
         $data = $this->form->getData();
         
         // clear session filters
-        TSession::setValue(__CLASS__.'_filter_quarto_id',   NULL);
+        TSession::setValue(__CLASS__.'_filter_mapa_reserva_id',   NULL);
         TSession::setValue(__CLASS__.'_filter_hora',   NULL);
         TSession::setValue(__CLASS__.'_filter_status',   NULL);
         TSession::setValue(__CLASS__.'_filter_dtcadastro',   NULL);
@@ -253,8 +253,8 @@ class ReservaList extends TPage
             $criteria->setProperty('limit', $limit);
             
 
-            if (TSession::getValue(__CLASS__.'_filter_quarto_id')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_quarto_id')); // add the session filter
+            if (TSession::getValue(__CLASS__.'_filter_mapa_reserva_id')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_mapa_reserva_id')); // add the session filter
             }
 
 
@@ -288,12 +288,12 @@ class ReservaList extends TPage
                 foreach ($objects as $object)
                 {
                     $object->faturamento_dia = 0;
-                    $quarto_valor = 0;
-                    $quartos = Quarto::where('reserva_id','=',$object->id)->load();
-                    if($quartos){
-                        foreach($quartos as $value){
-                            $quarto_valor += $value->valor;
-                            $object->faturamento_dia = $quarto_valor;
+                    $mapa_reserva_valor = 0;
+                    $mapa_reservas = MapaReserva::where('reserva_id','=',$object->id)->load();
+                    if($mapa_reservas){
+                        foreach($mapa_reservas as $value){
+                            $mapa_reserva_valor += $value->valor;
+                            $object->faturamento_dia = $mapa_reserva_valor;
                         }
                     }
 

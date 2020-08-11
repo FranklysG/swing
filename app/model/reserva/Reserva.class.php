@@ -11,7 +11,7 @@ class Reserva extends TRecord
     
     
     private $usuario;
-    private $quarto;
+    private $mapa_reserva;
 
     /**
      * Constructor method
@@ -53,29 +53,29 @@ class Reserva extends TRecord
     
     
     /**
-     * Method set_quarto
-     * Sample of usage: $reserva->quarto = $object;
-     * @param $object Instance of Quarto
+     * Method set_mapa_reserva
+     * Sample of usage: $reserva->mapa_reserva = $object;
+     * @param $object Instance of MapaReserva
      */
-    public function set_quarto(Quarto $object)
+    public function set_mapa_reserva(MapaReserva $object)
     {
-        $this->quarto = $object;
-        $this->quarto_id = $object->id;
+        $this->mapa_reserva = $object;
+        $this->mapa_reserva_id = $object->id;
     }
     
     /**
-     * Method get_quarto
-     * Sample of usage: $reserva->quarto->attribute;
-     * @returns Quarto instance
+     * Method get_mapa_reserva
+     * Sample of usage: $reserva->mapa_reserva->attribute;
+     * @returns MapaReserva instance
      */
-    public function get_quarto()
+    public function get_mapa_reserva()
     {
         // loads the associated object
-        if (empty($this->quarto))
-            $this->quarto = new Quarto($this->quarto_id);
+        if (empty($this->mapa_reserva))
+            $this->mapa_reserva = new MapaReserva($this->mapa_reserva_id);
     
         // returns the associated object
-        return $this->quarto;
+        return $this->mapa_reserva;
     }
     
 

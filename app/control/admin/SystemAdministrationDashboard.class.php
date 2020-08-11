@@ -36,25 +36,25 @@ class SystemAdministrationDashboard extends TPage
             $year_open = date('Y-01-01');
             $year_close = date('Y-12-30');
             
-            // quartos semanais
-            $repositoy_week = new TRepository('Quarto');
+            // mapa_reservas semanais
+            $repositoy_week = new TRepository('MapaReserva');
             $criteria_week = new TCriteria;
             $criteria_week->add(new TFilter('date(dtcadastro)', 'between', "{$week_open}", "{$today}"));
             $sum_week = $repositoy_week->sum($criteria_week, ['valor' => 'valor']);
 
-            // quartos mensais
-            $repositoy_month = new TRepository('Quarto');
+            // mapa_reservas mensais
+            $repositoy_month = new TRepository('MapaReserva');
             $criteria_month = new TCriteria;
             $criteria_month->add(new TFilter('date(dtcadastro)', 'between', "{$month_open}", "{$month_close}"));
             $sum_month = $repositoy_month->sum($criteria_month, ['valor' => 'valor']);
             
-            // quartos mensais
-            $repositoy_year = new TRepository('Quarto');
+            // mapa_reservas mensais
+            $repositoy_year = new TRepository('MapaReserva');
             $criteria_year = new TCriteria;
             $criteria_year->add(new TFilter('date(dtcadastro)', 'between', "{$year_open}", "{$year_close}"));
             $sum_year = $repositoy_year->sum($criteria_year, ['valor' => 'valor']);
             
-            $indicator1->enableSection('main', ['title' => 'Ocupados Hoje',    'icon' => 'users',       'background' => 'orange', 'value' => Quarto::where('date(dtcadastro)','=',date('Y-m-d'))->count()]);
+            $indicator1->enableSection('main', ['title' => 'Ocupados Hoje',    'icon' => 'users',       'background' => 'orange', 'value' => MapaReserva::where('date(dtcadastro)','=',date('Y-m-d'))->count()]);
             $indicator2->enableSection('main', ['title' => 'Extimativa faturamento semanal',   'icon' => 'money-bill-wave',      'background' => 'blue',   'value' => Convert::toMonetario($sum_week)]);
             $indicator3->enableSection('main', ['title' => 'Extimativa faturamento mensal',    'icon' => 'receipt', 'background' => 'purple', 'value' => Convert::toMonetario($sum_month)]);
             $indicator4->enableSection('main', ['title' => 'Extimativa faturamento anaul', 'icon' => 'wallet',       'background' => 'green',  'value' => Convert::toMonetario($sum_year)]);
@@ -64,7 +64,7 @@ class SystemAdministrationDashboard extends TPage
         
             // média de ocupação mensal
             $meses = AppUtil::calendario();
-            $objects = Quarto::getObjects();
+            $objects = MapaReserva::getObjects();
         
             if($objects){
                 foreach ($objects as $key => $value) {

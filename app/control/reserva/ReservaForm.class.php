@@ -28,7 +28,7 @@ class ReservaForm extends TPage
         $detail_uniqid = new THidden('detail_uniqid');
         $detail_id = new THidden('detail_id');
         $detail_n_quarto = new TEntry('detail_n_quarto');
-        $detail_n_quarto->addValidation('Numero do quarto', new TRequiredValidator);
+        $detail_n_quarto->addValidation('Numero do mapa_reserva', new TRequiredValidator);
         $detail_valor = new TEntry('detail_valor');
         $detail_valor->setMask('9!');
         $detail_status = new THidden('detail_status');
@@ -58,7 +58,7 @@ class ReservaForm extends TPage
         $row->layout = ['col-sm-3','col-sm-3','col-sm-3','col-sm-2','col-sm-2'];
        
         $this->detail_list = new BootstrapDatagridWrapper(new TDataGrid);
-        $this->detail_list->setId('Quarto_list');
+        $this->detail_list->setId('MapaReserva_list');
         $this->detail_list->generateHiddenFields();
         $this->detail_list->style = "min-width: 700px; width:100%;margin-bottom: 10px";
         
@@ -107,7 +107,7 @@ class ReservaForm extends TPage
         $action1 = new TDataGridAction([$this, 'onDetailDelete']);
         $action1->setFields(['uniqid', '*']);
         
-        $action3 = new TDataGridAction(['CartProdutoList', 'onReload'],['id_quarto' => '{id}']);
+        $action3 = new TDataGridAction(['CartProdutoList', 'onReload'],['id_mapa_reserva' => '{id}']);
         $action3->setDisplayCondition( array($this, 'displayColumn') );
         
         $this->detail_list->addAction($action3, 'Produtos', 'fa:cart-plus green');
@@ -195,7 +195,7 @@ class ReservaForm extends TPage
             $row = $this->detail_list->addItem( (object) $grid_data );
             $row->id = $uniqid;
             
-            TDataGrid::replaceRowById('Quarto_list', $uniqid, $row);
+            TDataGrid::replaceRowById('MapaReserva_list', $uniqid, $row);
             
             // clear detail form fields
             $data->detail_uniqid = '';
@@ -257,7 +257,7 @@ class ReservaForm extends TPage
             $key = $param['id']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
             
-            $object = new Quarto($key, FALSE); // instantiates the Active Record
+            $object = new MapaReserva($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
             
             // clear detail form fields
@@ -272,7 +272,7 @@ class ReservaForm extends TPage
             // send data, do not fire change/exit events
             TForm::sendData( 'form_Reserva', $data, false, false );
             // remove row
-            TDataGrid::removeRowById('Quarto_list', $param['uniqid']);
+            TDataGrid::removeRowById('MapaReserva_list', $param['uniqid']);
             
             TTransaction::close(); // close the transaction
             
@@ -302,7 +302,7 @@ class ReservaForm extends TPage
                 $key = $param['key'];
                 
                 $object = new Reserva($key);
-                $items  = Quarto::where('reserva_id', '=', $key)->load();
+                $items  = MapaReserva::where('reserva_id', '=', $key)->load();
 
                 foreach( $items as $item )
                 {
@@ -341,18 +341,18 @@ class ReservaForm extends TPage
             $data = $this->form->getData();
             // $this->form->validate();
 
-            if( isset($param['Quarto_list_id']) )
+            if( isset($param['MapaReserva_list_id']) )
             {
-                foreach( $param['Quarto_list_id'] as $key => $item_id )
+                foreach( $param['MapaReserva_list_id'] as $key => $item_id )
                 {
-                    $detail = Quarto::where('reserva_id', '=', $master_id)
-                                    ->where('id','=',$param['Quarto_list_id'][$key])->first();
+                    $detail = MapaReserva::where('reserva_id', '=', $master_id)
+                                    ->where('id','=',$param['MapaReserva_list_id'][$key])->first();
 
                     if(!$detail)
-                        $detail = new Quarto;
-                    $detail->n_quarto  = $param['Quarto_list_n_quarto'][$key];
-                    $detail->valor  = $param['Quarto_list_valor'][$key];
-                    $detail->status  = $param['Quarto_list_status'][$key];
+                        $detail = new MapaReserva;
+                    $detail->n_quarto  = $param['MapaReserva_list_n_quarto'][$key];
+                    $detail->valor  = $param['MapaReserva_list_valor'][$key];
+                    $detail->status  = $param['MapaReserva_list_status'][$key];
                     $detail->reserva_id = $master_id;
                     $detail->store();
                 }
