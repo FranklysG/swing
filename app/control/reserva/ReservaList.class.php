@@ -224,15 +224,14 @@ class ReservaList extends TPage
             // status 0 -> aberto 
             $reserva = Reserva::where('date(dtcadastro)','=',date('Y-m-d'))->first();
             if(!isset($reserva)){
+                $reserva = Reserva::where('status','=','0')->first();
+                $reserva->status = 1;
+                $reserva->store();
+
                 $reserva = new Reserva;
                 $reserva->usuario_id = TSession::getValue('userid');
                 $reserva->status = 0;
-                $reserva->store();
-            }
-            $reserva = Reserva::where('date(dtcadastro)','=',date('Y-m-d', strtotime('-1 day')))->first();
-            if(isset($reserva)){
-                $reserva->status = 1;
-                $reserva->store();
+                $reserva->store();   
             }
 
 
