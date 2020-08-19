@@ -28,7 +28,7 @@ class ReservaForm extends TPage
         $detail_uniqid = new THidden('detail_uniqid');
         $detail_id = new THidden('detail_id');
         $detail_n_quarto = new TEntry('detail_n_quarto');
-        $detail_n_quarto->addValidation('Numero do mapa_reserva', new TRequiredValidator);
+        $detail_n_quarto->addValidation('numero do quarto', new TRequiredValidator);
         $detail_valor = new TEntry('detail_valor');
         $detail_valor->setMask('9!');
         $detail_status = new THidden('detail_status');
@@ -208,6 +208,7 @@ class ReservaForm extends TPage
             // send data, do not fire change/exit events
             TForm::sendData( 'form_Reserva', $data, false, false );
             TTransaction::close();
+
         }
         catch (Exception $e)
         {

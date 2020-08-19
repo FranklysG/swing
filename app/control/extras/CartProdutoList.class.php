@@ -180,7 +180,16 @@ class CartProdutoList extends TPage
                 TForm::sendData('form_cart_produto_list', $obj, false, false);
                 TSession::setValue('form_cart_produto_list_obj', $data);
                 
-                TScript::create("__adianti_load_page('index.php?class=CartProdutoList&method=onReload&register_state=false');");
+                
+                $page = '';
+                $offset = '';
+                if(isset($param['page'])){
+                    $page = $param['page'];
+                }
+                if(isset($param['offset'])){
+                    $offset = $param['offset'];
+                }
+                TScript::create("__adianti_load_page('index.php?class=CartProdutoList&method=onReload&offset={$offset}&limit=10&direction=asc&page={$page}&first_page=1&order=id');");
             }
             TTransaction::close();
         }  catch (Exception $e)
@@ -214,7 +223,15 @@ class CartProdutoList extends TPage
             TForm::sendData('form_cart_produto_list', $obj, false, false);
             TSession::setValue('form_cart_produto_list_obj', $obj);
             
-            TScript::create("__adianti_load_page('index.php?class=CartProdutoList&method=onReload&register_state=false');");
+            $page = '';
+            $offset = '';
+            if(isset($param['page'])){
+                $page = $param['page'];
+            }
+            if(isset($param['offset'])){
+                $offset = $param['offset'];
+            }
+            TScript::create("__adianti_load_page('index.php?class=CartProdutoList&method=onReload&offset={$offset}&limit=10&direction=asc&page={$page}&first_page=1&order=id');");
             TTransaction::close();
         }  catch (Exception $e)
         {

@@ -65,7 +65,7 @@ class SystemAdministrationDashboard extends TPage
             // média de ocupação mensal
             $meses = AppUtil::calendario();
             $objects = MapaReserva::getObjects();
-        
+            $data_count = [];
             if($objects){
                 foreach ($objects as $key => $value) {
                     if(empty($data_count[date_parse($value->dtcadastro)['month']])){
