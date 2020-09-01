@@ -106,14 +106,15 @@ class ReservaForm extends TPage
         
         $action1 = new TDataGridAction([$this, 'onDetailDelete']);
         $action1->setFields(['uniqid', '*']);
+        $action1->setDisplayCondition( array($this, 'displayColumnToday') );
         
         $action3 = new TDataGridAction(['CartProdutoList', 'onReload'],['id_mapa_reserva' => '{id}']);
         $action3->setDisplayCondition( array($this, 'displayColumn') );
+        $action3->setDisplayCondition( array($this, 'displayColumnToday') );
         
         $this->detail_list->addAction($action3, 'Produtos', 'fa:cart-plus green');
         $this->detail_list->addAction($action1, _t('Delete'), 'far:trash-alt red');
         if(TSession::getValue('userid') == 1){
-            // add the actions to the datagrid
             $this->detail_list->addAction($action2, _t('Edit'), 'fa:edit blue');
         }
 
@@ -146,6 +147,18 @@ class ReservaForm extends TPage
         return FALSE;
     }
     
+    // dessativa os botão quando a data não for a de hoje
+    public function displayColumnToday( $object )
+    {
+        if(isset($object->dtcadastro)){
+            if (Convert::toDateBR($object->dtcadastro) == date('d/m/Y')){
+                return TRUE;
+            }else{
+                return FALSE;
+            }
+        }
+        
+    }
     /**
      * Clear form
      * @param $param URL parameters

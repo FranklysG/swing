@@ -95,7 +95,6 @@ class ReservaList extends TPage
         $this->datagrid->addColumn($column_dtcadastro);
 
         $action1 = new TDataGridAction(['ReservaForm', 'onEdit'], ['id'=>'{id}']);
-        $action1->setDisplayCondition( array($this, 'displayColumn') );
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
         
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
@@ -128,15 +127,6 @@ class ReservaList extends TPage
      *              field name: object attribute to be updated
      *              value: new attribute content 
      */
-
-    public function displayColumn( $object )
-    {
-        if (Convert::toDateBR($object->dtcadastro) == date('d/m/Y'))
-        {
-            return TRUE;
-        }
-        return FALSE;
-    }
 
 
     public function onInlineEdit($param)
