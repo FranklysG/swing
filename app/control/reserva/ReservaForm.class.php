@@ -63,8 +63,8 @@ class ReservaForm extends TPage
         $this->detail_list->style = "min-width: 700px; width:100%;margin-bottom: 10px";
         
         $column_valor = new TDataGridColumn('valor', 'VALOR', 'left', 100);
-        $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'left', 100);
-        $column_status = new TDataGridColumn('status', 'STATUS', 'left', 100);
+        $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'center', 100);
+        $column_status = new TDataGridColumn('status', 'STATUS', 'center', 100);
         
         $column_valor->setTransformer(function ($value) {
             return Convert::toMonetario($value);
@@ -126,9 +126,6 @@ class ReservaForm extends TPage
         $panel->add($this->detail_list);
         $panel->getBody()->style = 'overflow-x:auto';
         $this->form->addContent( [$panel] );
-        
-        $this->form->addAction( 'Salvar',  new TAction([$this, 'onSave'], ['static'=>'1']), 'fa:save green');
-        $this->form->addAction( 'Voltar', new TAction(['ReservaList', 'onReload']), 'fa:eraser red');
         
         // create the page container
         $container = new TVBox;
@@ -320,11 +317,17 @@ class ReservaForm extends TPage
 
                 foreach( $items as $item )
                 {
-
+                    
                     $item->uniqid = uniqid();
                     $row = $this->detail_list->addItem( $item );
                     $row->id = $item->uniqid;
                 }
+
+                // esconde o botão de salvar quando a data for diferente da de hoje
+                if(Convert::toDateBR($object->dtcadastro) == date('d/m/Y')){
+                    $this->form->addAction( 'Salvar',  new TAction([$this, 'onSave'], ['static'=>'1']), 'fa:save green');
+                }
+                $this->form->addAction( 'Voltar', new TAction(['ReservaList', 'onReload']), 'fa:eraser red');
 
                 $this->form->setData($object);
                 TTransaction::close();

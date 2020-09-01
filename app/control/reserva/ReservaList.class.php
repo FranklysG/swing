@@ -57,10 +57,10 @@ class ReservaList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'ID', 'left');
-        $column_faturamento = new TDataGridColumn('faturamento_dia', 'FATURAMENTO', 'left');
-        $column_status = new TDataGridColumn('status', 'STATUS', 'left');
-        $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'left');
+        $column_id = new TDataGridColumn('id', 'ID', 'right');
+        $column_faturamento = new TDataGridColumn('faturamento_dia', 'FATURAMENTO', 'right');
+        $column_status = new TDataGridColumn('status', 'STATUS', 'center');
+        $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'center');
         
         $column_faturamento->setTransformer(function ($value) {
             return Convert::toMonetario($value);
@@ -89,10 +89,10 @@ class ReservaList extends TPage
         });
 
         // add the columns to the DataGrid
-        $this->datagrid->addColumn($column_id);
-        $this->datagrid->addColumn($column_faturamento);
-        $this->datagrid->addColumn($column_status);
+        // $this->datagrid->addColumn($column_id);
         $this->datagrid->addColumn($column_dtcadastro);
+        $this->datagrid->addColumn($column_status);
+        $this->datagrid->addColumn($column_faturamento);
 
         $action1 = new TDataGridAction(['ReservaForm', 'onEdit'], ['id'=>'{id}']);
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
@@ -214,9 +214,11 @@ class ReservaList extends TPage
             // status 0 -> aberto 
             $reserva = Reserva::where('date(dtcadastro)','=',date('Y-m-d'))->first();
             if(!isset($reserva)){
-                $reserva = Reserva::where('status','=','0')->first();
-                $reserva->status = 1;
-                $reserva->store();
+                $reserva_aberta = Reserva::where('status','=','0')->load();
+                foreach ($reserva_aberta as $reserva) {
+                    $reserva->status = 1;
+                    $reserva->store();
+                }
 
                 $reserva = new Reserva;
                 $reserva->usuario_id = TSession::getValue('userid');

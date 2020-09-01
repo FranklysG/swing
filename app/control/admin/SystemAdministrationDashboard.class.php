@@ -32,9 +32,7 @@ class SystemAdministrationDashboard extends TPage
             $today = date('Y-m-d');
             $week_open = date('Y-m-d', strtotime('-1 week'));
             $month_open = date('Y-m-01');
-            $month_close = date('Y-m-30');
             $year_open = date('Y-01-01');
-            $year_close = date('Y-12-30');
             
             // mapa_reservas semanais
             $repositoy_week = new TRepository('MapaReserva');
@@ -45,13 +43,13 @@ class SystemAdministrationDashboard extends TPage
             // mapa_reservas mensais
             $repositoy_month = new TRepository('MapaReserva');
             $criteria_month = new TCriteria;
-            $criteria_month->add(new TFilter('date(dtcadastro)', 'between', "{$month_open}", "{$month_close}"));
+            $criteria_month->add(new TFilter('date(dtcadastro)', 'between', "{$month_open}", "{$today}"));
             $sum_month = $repositoy_month->sum($criteria_month, ['valor' => 'valor']);
             
             // mapa_reservas mensais
             $repositoy_year = new TRepository('MapaReserva');
             $criteria_year = new TCriteria;
-            $criteria_year->add(new TFilter('date(dtcadastro)', 'between', "{$year_open}", "{$year_close}"));
+            $criteria_year->add(new TFilter('date(dtcadastro)', 'between', "{$year_open}", "{$today}"));
             $sum_year = $repositoy_year->sum($criteria_year, ['valor' => 'valor']);
             
             $indicator1->enableSection('main', ['title' => 'Ocupados Hoje',    'icon' => 'users',       'background' => 'orange', 'value' => MapaReserva::where('date(dtcadastro)','=',date('Y-m-d'))->count()]);
