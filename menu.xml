@@ -18,6 +18,15 @@
       </menuitem>
     </menu>
   </menuitem>
+  <menuitem label="Entrada / Saida">
+    <icon>fas:hand-holding-usd fa-fw</icon>
+    <menu>
+      <menuitem label="Entrada">
+        <action>EntradaFormList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+    </menu>
+  </menuitem>
   <menuitem label="_t{Administration}">
     <icon>fas:home fa-fw</icon>
     <menu>

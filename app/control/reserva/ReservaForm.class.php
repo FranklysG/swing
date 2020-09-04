@@ -89,7 +89,7 @@ class ReservaForm extends TPage
         });
 
         $column_dtcadastro->setTransformer(function ($value) {
-                return Convert::toDateBR($value);
+                return Convert::toDateTimeBR($value);
         });
 
         // items
