@@ -77,11 +77,11 @@ class EntradaFormList extends TPage
         $column_tipo_entrada_id = new TDataGridColumn('tipo_entrada->nome', 'TIPO DA ENTRADA', 'left');
         $column_usuario_id = new TDataGridColumn('usuario_id', 'Usuario Id', 'left');
         $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
-        $column_qtd = new TDataGridColumn('qtd', 'QUANTIDADE', 'left');
-        $column_valor_uni = new TDataGridColumn('valor_uni', 'VALOR UNITARIO', 'left');
-        $column_valor_venda_uni = new TDataGridColumn('valor_venda_uni', 'VALOR VENDA', 'left');
-        $column_valor_lucro_ext = new TDataGridColumn('valor_lucro_ext', 'VALOR LUCRO EXT.', 'left');
-        $column_valor_total = new TDataGridColumn('valor_total', 'VALOR NOTA TOTAL', 'left');
+        $column_qtd = new TDataGridColumn('qtd', 'QUANT', 'left');
+        $column_valor_uni = new TDataGridColumn('valor_uni', 'VALOR UNI', 'left');
+        $column_valor_venda_uni = new TDataGridColumn('valor_venda_uni', 'VALOR VEN', 'left');
+        $column_valor_lucro_ext = new TDataGridColumn('=({qtd}*{valor_uni})-({qtd}*{valor_venda_uni})', 'LUCRO EXT.', 'left');
+        $column_valor_total = new TDataGridColumn('={qtd}*{valor_uni}', 'VALOR NOTA TOTAL', 'left');
         $column_status = new TDataGridColumn('status', 'STATUS', 'left');
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'left');
 
@@ -94,6 +94,7 @@ class EntradaFormList extends TPage
         });
 
         $column_valor_lucro_ext->setTransformer(function ($value) {
+            ($value > 0)?: $value = $value*(-1);
             return Convert::toMonetario($value);
         });
         
@@ -293,11 +294,7 @@ class EntradaFormList extends TPage
             
             $object = new Entrada;  // create an empty object
             $object->usuario_id = TSession::getValue('userid');
-            // alteração de dados antes do save
-            if(isset($data->valor_uni) and isset($data->qtd)){
-                $object->valor_total = ($data->qtd * $data->valor_uni);
-                $object->valor_lucro_ext = ($data->qtd * $data->valor_venda_uni);
-            }
+            $object->status = 1;
             
             $object->fromArray( (array) $data); // load the object with data
             $object->store(); // save the object

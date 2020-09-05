@@ -25,9 +25,7 @@ class Entrada extends TRecord
         parent::addAttribute('nome');
         parent::addAttribute('qtd');
         parent::addAttribute('valor_uni');
-        parent::addAttribute('valor_total');
         parent::addAttribute('valor_venda_uni');
-        parent::addAttribute('valor_lucro_ext');
         parent::addAttribute('status');
         parent::addAttribute('dtcadastro');
     }
