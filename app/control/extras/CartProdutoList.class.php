@@ -23,7 +23,9 @@ class CartProdutoList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_cart_produto_list');
-        $this->form->style = "width: 100%;height:70px;";
+        $this->form->setFormTitle('<strong>CARRINHO</strong>');
+        $this->form->setProperty('class', 'cartprodutolist_css');
+        $this->form->setFieldSizes('100%');
         
         // master fields
         $id = new THidden('id');
@@ -38,8 +40,8 @@ class CartProdutoList extends TPage
         $detail_valor->setEditable(FALSE);
         
         $this->form->addFields([$id,$n_quarto,$valor]);
-        $row = $this->form->addFields( [new TLabel('NUMERO DO QUARTO'), $detail_n_quarto],
-                                        [new TLabel('VALOR'), $detail_valor]
+        $row = $this->form->addFields( [new TLabel('<br>NUMERO DO QUARTO'), $detail_n_quarto],
+                                        [new TLabel('<br>VALOR'), $detail_valor]
                                         );
         
         $row->layout = ['col-sm-6','col-sm-6'];
@@ -51,11 +53,11 @@ class CartProdutoList extends TPage
         $this->datagrid->datatable = 'true';
         
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'left');
+        $column_id = new TDataGridColumn('id', 'Id', 'right');
         $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
-        $column_qtd = new TDataGridColumn('qtd', 'QTD', 'left');
-        $column_check = new TDataGridColumn('check', '', 'left');
-        $column_valor = new TDataGridColumn('valor', 'VALOR', 'left');
+        $column_qtd = new TDataGridColumn('qtd', 'QTD', 'center');
+        $column_check = new TDataGridColumn('check', '', 'right');
+        $column_valor = new TDataGridColumn('valor', 'VALOR', 'right');
 
         $column_check->setTransformer( function($value, $object, $row) {
             $class = 'danger';
@@ -78,9 +80,9 @@ class CartProdutoList extends TPage
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
-        $this->datagrid->addColumn($column_nome);
         $this->datagrid->addColumn($column_qtd);
-        $this->datagrid->addColumn($column_check);
+        $this->datagrid->addColumn($column_nome);
+        // $this->datagrid->addColumn($column_check);
         $this->datagrid->addColumn($column_valor);
 
 
@@ -95,27 +97,18 @@ class CartProdutoList extends TPage
         
         // create the datagrid model
         $this->datagrid->createModel();
-        
         // creates the page navigation
         $this->pageNavigation = new TPageNavigation;
         $this->pageNavigation->setAction(new TAction([$this, 'onReload']));
         $this->pageNavigation->setWidth($this->datagrid->getWidth());
         
-        $panel = new TPanelGroup('<strong>CARRINHO - ' . date('d/m/y').'</strong>');
-        $panel->add($this->form);
-        $panel->add($this->datagrid);
-        // $panel->addHeaderActionLink('', new TAction([$this, 'onSave'], ['register_state' => 'false']), 'fa:cart-plus green');
-        $panel->addHeaderActionLink('', new TAction([$this, 'onClose']), 'fa:times red');
-        $panel->getBody()->style = "overflow-x:auto;";
-        $panel->addFooter($this->pageNavigation);
-
-        // vertical box container
-        $container = new TVBox;
-        $container->style = 'width: 100%';
-        // $container->add(TPanelGroup::pack('CARRINHO DE PRODUTOS',$this->datagrid, $this->pageNavigation));
-        $container->add($panel);
-        
-        parent::add($container);
+       
+        // $this->form->addHeaderActionLink('', new TAction([$this, 'onClose']), 'fa:times red');
+        $this->form->addHeaderActionLink( _t('Close'), new TAction(array($this, 'onClose')), 'fa:times red');
+        // $this->form->addFields([$this->datagrid]);
+        parent::add($this->form);
+        parent::add($this->datagrid);
+        parent::add($this->pageNavigation);
 
     }
     

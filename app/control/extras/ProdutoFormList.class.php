@@ -66,7 +66,7 @@ class ProdutoFormList extends TPage
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'ID', 'left');
-        $column_nome = new TDataGridColumn('nome', 'NOME PRODUTO', 'left');
+        $column_nome = new TDataGridColumn('nome', 'PRODUTO', 'left');
         $column_valor = new TDataGridColumn('valor', 'VALOR', 'left');
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'left');
 
@@ -80,7 +80,7 @@ class ProdutoFormList extends TPage
 
 
         // add the columns to the DataGrid
-        $this->datagrid->addColumn($column_id);
+        // $this->datagrid->addColumn($column_id);
         $this->datagrid->addColumn($column_nome);
         $this->datagrid->addColumn($column_valor);
         $this->datagrid->addColumn($column_dtcadastro);

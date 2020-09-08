@@ -42,9 +42,7 @@ class ReservaForm extends TPage
         }
         
         // // detail fields
-        $this->form->addFields([$id]);
-        $this->form->addFields( [$detail_uniqid] );
-        $this->form->addFields( [$detail_id] );
+        $this->form->addFields([$id,$detail_uniqid,$detail_id]);
         
         $add = TButton::create('add', [$this, 'onDetailAdd'], 'Register', 'fa:plus-circle green');
         $add->getAction()->setParameter('static','1');
@@ -60,7 +58,7 @@ class ReservaForm extends TPage
         $this->detail_list = new BootstrapDatagridWrapper(new TDataGrid);
         $this->detail_list->setId('MapaReserva_list');
         $this->detail_list->generateHiddenFields();
-        $this->detail_list->style = "min-width: 700px; width:100%;margin-bottom: 10px";
+        // $this->detail_list->style = "min-width: 700px; width:100%;margin-bottom: 10px";
         
         $column_valor = new TDataGridColumn('valor', 'VALOR', 'left', 100);
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'center', 100);
@@ -97,8 +95,8 @@ class ReservaForm extends TPage
         $this->detail_list->addColumn( new TDataGridColumn('id', 'Id', 'left') )->setVisibility(false);
         $this->detail_list->addColumn( new TDataGridColumn('n_quarto', 'N QUARTO', 'left', 100) );
         $this->detail_list->addColumn( $column_valor );
-        $this->detail_list->addColumn( $column_status );
-        $this->detail_list->addColumn( $column_dtcadastro );
+        // $this->detail_list->addColumn( $column_status );
+        // $this->detail_list->addColumn( $column_dtcadastro );
 
         // detail actions
         $action2 = new TDataGridAction([$this, 'onDetailEdit'] );
@@ -125,7 +123,7 @@ class ReservaForm extends TPage
         $panel = new TPanelGroup;
         $panel->add($this->detail_list);
         $panel->getBody()->style = 'overflow-x:auto';
-        $this->form->addContent( [$panel] );
+        $this->form->addFields( [$panel] );
         
         // create the page container
         $container = new TVBox;
@@ -239,7 +237,7 @@ class ReservaForm extends TPage
         $data->detail_n_quarto = $param['n_quarto'];
         $data->detail_valor = $param['valor'];
         $data->detail_status = $param['status'];
-        $data->detail_dtcadastro = $param['dtcadastro'];
+        // $data->detail_dtcadastro = $param['dtcadastro'];
         
         // send data, do not fire change/exit events
         TForm::sendData( 'form_Reserva', $data, false, false );
@@ -369,7 +367,8 @@ class ReservaForm extends TPage
                         $detail = new MapaReserva;
                     $detail->n_quarto  = $param['MapaReserva_list_n_quarto'][$key];
                     $detail->valor  = $param['MapaReserva_list_valor'][$key];
-                    $detail->status  = $param['MapaReserva_list_status'][$key];
+                    // $detail->status  = $param['MapaReserva_list_status'][$key];
+                    $detail->status  = 1;
                     $detail->reserva_id = $master_id;
                     $detail->store();
                 }

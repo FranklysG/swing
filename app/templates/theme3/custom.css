@@ -1,0 +1,28 @@
+
+@media screen and (max-width: 1400px) {
+    .right-panel {
+        width: 500px !important;
+    }
+    .cartprodutolist_css > .form-horizontal > .card-body{
+        margin-top: -15px !important;
+        margin-bottom: 10px !important;
+        padding: 0px !important;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .right-panel {
+        width: 500px !important;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .right-panel {
+        width: 95% !important;
+    }
+    .cartprodutolist_css > .form-horizontal > .card-body{
+        margin-top: -15px !important;
+        margin-bottom: 10px !important;
+        padding: 0px !important;
+    }
+}
