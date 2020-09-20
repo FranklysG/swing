@@ -3,6 +3,10 @@
  * EntradaFormList Form List
  * @author  <your name here>
  */
+
+// use NFePHP\NFe;
+use NFePHP\NFe\Tools;
+
 class EntradaFormList extends TPage
 {
     protected $form; // form
@@ -17,8 +21,7 @@ class EntradaFormList extends TPage
     public function __construct( $param )
     {
         parent::__construct();
-        
-        
+            
         $this->form = new BootstrapFormBuilder('form_Entrada');
         $this->form->setFormTitle('Entrada');
         $this->form->setFieldSizes('100%');
@@ -31,9 +34,11 @@ class EntradaFormList extends TPage
         $usuario_id = new TEntry('usuario_id');
         $nome = new TEntry('nome');
         $nome->forceUpperCase();
-        $qtd = new TEntry('qtd');
+        $qtd_nota = new TEntry('qtd_nota');
         $valor_uni = new TEntry('valor_uni');
+        $valor_uni->setNumericMask(2, ',', '.', true);
         $valor_venda_uni = new TEntry('valor_venda_uni');
+        $valor_venda_uni->setNumericMask(2, ',', '.', true);
         $status = new TEntry('status');
         $dtcadastro = new TEntry('dtcadastro');
 
@@ -42,7 +47,7 @@ class EntradaFormList extends TPage
         $row = $this->form->addFields(
                                 [ new TLabel('Tipo Entrada'), $tipo_entrada_id ],
                                 [ new TLabel('Nome Produto'), $nome ] ,
-                                [ new TLabel('Quantidade'), $qtd ] ,
+                                [ new TLabel('Quantidade'), $qtd_nota ] ,
                                 [ new TLabel('Valor Unitario'), $valor_uni ],
                                 [ new TLabel('Valor de venda uni'), $valor_venda_uni ]);
 
@@ -77,11 +82,11 @@ class EntradaFormList extends TPage
         $column_tipo_entrada_id = new TDataGridColumn('tipo_entrada->nome', 'TIPO DA ENTRADA', 'left');
         $column_usuario_id = new TDataGridColumn('usuario_id', 'Usuario Id', 'left');
         $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
-        $column_qtd = new TDataGridColumn('qtd', 'QUANT', 'left');
+        $column_qtd_nota = new TDataGridColumn('qtd_nota', 'QUANT', 'left');
         $column_valor_uni = new TDataGridColumn('valor_uni', 'VALOR UNI', 'left');
         $column_valor_venda_uni = new TDataGridColumn('valor_venda_uni', 'VALOR VEN', 'left');
-        $column_valor_lucro_ext = new TDataGridColumn('=({qtd}*{valor_uni})-({qtd}*{valor_venda_uni})', 'LUCRO EXT.', 'left');
-        $column_valor_total = new TDataGridColumn('={qtd}*{valor_uni}', 'VALOR NOTA TOTAL', 'left');
+        $column_valor_lucro_ext = new TDataGridColumn('=({qtd_nota}*{valor_uni})-({qtd_nota}*{valor_venda_uni})', 'LUCRO EXT.', 'left');
+        $column_valor_total = new TDataGridColumn('={qtd_nota}*{valor_uni}', 'VALOR NOTA TOTAL', 'left');
         $column_status = new TDataGridColumn('status', 'STATUS', 'left');
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'left');
 
@@ -130,7 +135,7 @@ class EntradaFormList extends TPage
         $this->datagrid->addColumn($column_tipo_entrada_id);
         // $this->datagrid->addColumn($column_usuario_id);
         $this->datagrid->addColumn($column_nome);
-        $this->datagrid->addColumn($column_qtd);
+        $this->datagrid->addColumn($column_qtd_nota);
         $this->datagrid->addColumn($column_valor_uni);
         $this->datagrid->addColumn($column_valor_venda_uni);
         $this->datagrid->addColumn($column_valor_total);
@@ -183,9 +188,16 @@ class EntradaFormList extends TPage
     {
         try
         {
+            
             // open a transaction with database 'app'
             TTransaction::open('app');
+            // nfce compra mateus 21200803995515002615653110000268171001618230
+            $chave_nfe = '53190222769530000131556110000002001616311935';
             
+            // $nfe = new Tools($configJson, $certificate);
+            // $nfe->csefazConsultaChave($chave_nfe);
+            // var_dump($nfe);
+            // var_dump($this->nfe->sefazConsultaChave($chave_nfe));
             // creates a repository for Entrada
             $repository = new TRepository('Entrada');
             $limit = 10;
@@ -293,6 +305,7 @@ class EntradaFormList extends TPage
             $data = $this->form->getData(); // get form data as array
             
             $object = new Entrada;  // create an empty object
+            $object->qtd_estoque = $data->qtd_nota;
             $object->usuario_id = TSession::getValue('userid');
             $object->status = 1;
             

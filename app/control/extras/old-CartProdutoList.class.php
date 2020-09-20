@@ -57,7 +57,7 @@ class CartProdutoList extends TPage
         $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
         $column_qtd = new TDataGridColumn('qtd', 'QTD', 'center');
         $column_check = new TDataGridColumn('check', '', 'right');
-        $column_valor = new TDataGridColumn('valor_venda_uni', 'VALOR', 'right');
+        $column_valor = new TDataGridColumn('valor', 'VALOR', 'right');
 
         $column_check->setTransformer( function($value, $object, $row) {
             $class = 'danger';
@@ -87,10 +87,10 @@ class CartProdutoList extends TPage
 
 
         $action1 = new TDataGridAction([$this, 'onAddItem'],['static'=>'1']);
-        $action1->setFields(['id', 'valor_venda_uni']);
+        $action1->setFields(['id', 'valor']);
         $action2 = new TDataGridAction([$this, 'onDelItem'],['static'=>'1']);
         $action2->setDisplayCondition( array($this, 'displayColumn') );
-        $action2->setFields(['id', 'valor_venda_uni']);
+        $action2->setFields(['id', 'valor']);
         
         $this->datagrid->addAction($action1, 'adicionar',   'fa:plus-circle green');
         $this->datagrid->addAction($action2 ,'remover', 'fa:minus-circle red');
@@ -153,24 +153,20 @@ class CartProdutoList extends TPage
     {
         try {
             TTransaction::open('app');
+            
             $data = TSession::getValue('form_cart_produto_list_obj');
             if(isset($data)){
                 // atualiza o valor do mapa_reserva de acordo com a adição do produto
                 $mapa_reserva = MapaReserva::find($data->id_mapa_reserva);
-                $mapa_reserva->valor += $param['valor_venda_uni'];
+                $mapa_reserva->valor += $param['valor'];
                 $mapa_reserva->store(); 
                 
                 // incrementa o produto na tabela de consumo
                 $consumo = new Consumo;
                 $consumo->produto_id = $param['id'];
-                $consumo->entrada_id = $param['id'];
                 $consumo->mapa_reserva_id = $data->id_mapa_reserva;
                 $consumo->store();
                 
-                $entrada = Entrada::find($param['id']);
-                $entrada->qtd_estoque -= 1;
-                $entrada->store(); 
-
                 $data->detail_valor = $mapa_reserva->valor;;
                 $obj = new stdClass;
                 $obj->check = 1;
@@ -205,19 +201,15 @@ class CartProdutoList extends TPage
             // atualiza o valor do mapa_reserva de acordo com a remoção do produto
             $data = TSession::getValue('form_cart_produto_list_obj');
             $mapa_reserva = MapaReserva::find($data->id_mapa_reserva);
-            $mapa_reserva->valor -= $param['valor_venda_uni'];
+            $mapa_reserva->valor -= $param['valor'];
             $mapa_reserva->store(); 
             
             // Remove o produto selecionado
             $consumo = Consumo::where('mapa_reserva_id','=',$data->id_mapa_reserva)
-                                        ->where('entrada_id','=',$param['id'])->first();
+                                        ->where('produto_id','=',$param['id'])->first();
 
             $consumo->delete();
             
-            $entrada = Entrada::find($param['id']);
-            $entrada->qtd_estoque += 1;
-            $entrada->store(); 
-
             $obj = $data;
             $obj->detail_valor = $mapa_reserva->valor;
             $obj->check = 0;
@@ -267,8 +259,7 @@ class CartProdutoList extends TPage
            
             
             // creates a repository for Produto
-            // $repository = new TRepository('Produto');
-            $repository = new TRepository('Entrada');
+            $repository = new TRepository('Produto');
             $limit = 10;
             // creates a criteria
             $criteria = new TCriteria;
@@ -281,7 +272,8 @@ class CartProdutoList extends TPage
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
-            $criteria->add(new TFilter('tipo_entrada_id','=',1));
+            
+
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
@@ -293,8 +285,6 @@ class CartProdutoList extends TPage
             
             $this->datagrid->clear();
             
-            // verifica se o id do quarto ta vindo no TEntry na aba do carrinho, se não tiver 
-            // ele pega pelo param
             $ids = [];
             
             ($data)?
@@ -303,25 +293,21 @@ class CartProdutoList extends TPage
                 $id_mapa_reserva = $param['id_mapa_reserva']
             ;
             
-            // pega o id de todos os produtos consumidos por esse quarto ....
             $consumos = Consumo::where('mapa_reserva_id','=',$id_mapa_reserva)->load();
             if(isset($consumos)){
                 foreach ($consumos as $value) {
-                    $ids[] = $value->entrada_id;
+                    $ids[] = $value->produto_id;
                 }
             }
-              
-            
+                  
             if ($objects)
             {
                 foreach ($objects as $object)
                 {
-                    // inicia a quantidade de produtos do carrinho no 0
+                    // iterate the collection of active records
                     $object->qtd = 0;
                     $object->check = 0;
                     foreach ($ids as $value) {
-                        // se já tiver o id do produto ele soma mais um e se
-                        // não tiver ele adiciona um na contagem
                         if($object->id == $value){
                             $object->qtd += 1;
                             $object->check = 1;

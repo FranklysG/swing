@@ -23,7 +23,8 @@ class Entrada extends TRecord
         parent::addAttribute('tipo_entrada_id');
         parent::addAttribute('usuario_id');
         parent::addAttribute('nome');
-        parent::addAttribute('qtd');
+        parent::addAttribute('qtd_nota');
+        parent::addAttribute('qtd_estoque');
         parent::addAttribute('valor_uni');
         parent::addAttribute('valor_venda_uni');
         parent::addAttribute('status');

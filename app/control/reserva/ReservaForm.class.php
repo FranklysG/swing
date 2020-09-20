@@ -59,6 +59,7 @@ class ReservaForm extends TPage
         $this->detail_list->setId('MapaReserva_list');
         $this->detail_list->generateHiddenFields();
         // $this->detail_list->style = "min-width: 700px; width:100%;margin-bottom: 10px";
+        $this->detail_list->style = "width:100%;margin-bottom: 10px";
         
         $column_valor = new TDataGridColumn('valor', 'VALOR', 'left', 100);
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'center', 100);

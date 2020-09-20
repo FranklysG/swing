@@ -12,6 +12,7 @@ class Consumo extends TRecord
     
     private $mapa_reserva;
     private $produto;
+    private $entrada;
 
     /**
      * Constructor method
@@ -21,6 +22,7 @@ class Consumo extends TRecord
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('mapa_reserva_id');
         parent::addAttribute('produto_id');
+        parent::addAttribute('entrada_id');
         parent::addAttribute('dtcadastro');
     }
 
@@ -76,6 +78,33 @@ class Consumo extends TRecord
     
         // returns the associated object
         return $this->produto;
+    }
+    
+
+    /**
+     * Method set_entrada
+     * Sample of usage: $consumo->entrada = $object;
+     * @param $object Instance of entrada
+     */
+    public function set_entrada(Entrada $object)
+    {
+        $this->entrada = $object;
+        $this->entrada_id = $object->id;
+    }
+    
+    /**
+     * Method get_entrada
+     * Sample of usage: $consumo->entrada->attribute;
+     * @returns entrada instance
+     */
+    public function get_entrada()
+    {
+        // loads the associated object
+        if (empty($this->entrada))
+            $this->entrada = new Entrada($this->entrada_id);
+    
+        // returns the associated object
+        return $this->entrada;
     }
     
 
