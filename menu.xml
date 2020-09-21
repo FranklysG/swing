@@ -27,6 +27,15 @@
       </menuitem>
     </menu>
   </menuitem>
+  <menuitem label="Relatorios">
+    <icon>fas:file-alt fa-fw</icon>
+    <menu>
+      <menuitem label="Faturamento">
+        <action>ViewRelatorioOcupacaoReport</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+    </menu>
+  </menuitem>
   <menuitem label="_t{Administration}">
     <icon>fas:home fa-fw</icon>
     <menu>
