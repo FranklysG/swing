@@ -21,7 +21,7 @@ class ViewRelatorioOcupacao extends TRecord
         parent::addAttribute('m_res_id');
         parent::addAttribute('m_res_n_quarto');
         parent::addAttribute('m_res_valor');
-        parent::addAttribute('cos_id');
+        parent::addAttribute('con_id');
         parent::addAttribute('prod_id');
         parent::addAttribute('prod_nome');
         parent::addAttribute('prod_valor');

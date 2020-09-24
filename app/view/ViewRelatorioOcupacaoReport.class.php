@@ -76,12 +76,6 @@ class ViewRelatorioOcupacaoReport extends TPage
             
             $repository = new TRepository('ViewRelatorioOcupacao');
             $criteria   = new TCriteria;
-            
-            // default order
-            $param['order'] = 'res_dtcadastro';
-            $param['order'] = 'res_id';
-            $param['direction'] = 'asc';
-            $criteria->setProperties($param); // order, offset
 
             if ((isset($data->date_ini) and $data->date_ini) and (isset($data->date_end) and $data->date_end))
             {
@@ -89,7 +83,7 @@ class ViewRelatorioOcupacaoReport extends TPage
             }
 
            
-            $objects = $repository->load($criteria, FALSE);
+            $objects = $repository->load($criteria);
             $format  = $data->output_type;
             
             if ($objects)
@@ -186,9 +180,9 @@ class ViewRelatorioOcupacaoReport extends TPage
                     
                     
                     $tr->addRow();
-                    $tr->addCell(Convert::toDateTimeBR($object->res_dtcadastro), 'left', $style);
+                    $tr->addCell(Convert::toDateBR($object->res_dtcadastro), 'left', $style);
                     $tr->addCell($object->m_res_n_quarto, 'right', $style);
-                    $tr->addCell((!empty($valor_quarto))? Convert::toMonetario($valor_quarto): '', 'right', $style);
+                    $tr->addCell((!empty($valor_quarto))? Convert::toMonetario($valor_quarto): ' ', 'right', $style);
                     $tr->addCell($object->prod_nome, 'right', $style);
                     $tr->addCell($object->prod_qtd, 'right', $style);
                     $tr->addCell(($object->prod_valor)? Convert::toMonetario($object->prod_valor) : ' ', 'right', $style);

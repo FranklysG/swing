@@ -25,6 +25,10 @@
         <action>EntradaFormList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Saida">
+        <action>SaidaFormList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
     </menu>
   </menuitem>
   <menuitem label="Relatorios">

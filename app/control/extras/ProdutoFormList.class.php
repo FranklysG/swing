@@ -1,7 +1,7 @@
 <?php
 /**
  * ProdutoFormList Form List
- * @author  <your name here>
+ * @author  <your nome here>
  */
 class ProdutoFormList extends TPage
 {
@@ -26,21 +26,20 @@ class ProdutoFormList extends TPage
 
         // create the form fields
         $id = new THidden('id');
+        $cod = new TEntry('codigo');
+        $cod->addValidation('Codigo Produto', new TRequiredValidator);
         $nome = new TEntry('nome');
         $nome->addValidation('Nome Produto', new TRequiredValidator);
         $nome->forceUpperCase();
-        $valor = new TEntry('valor');
-        $valor->setMask('9!');
-        $valor->addValidation('Valor Produto', new TRequiredValidator);
         // $dtcadastro = new THidden('dtcadastro');
 
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields( [ new TLabel('Nome'), $nome ],
-                                [ new TLabel('Valor'), $valor ] );
+        $row = $this->form->addFields( [ new TLabel('Codigo'), $cod ],
+        [ new TLabel('Nome'), $nome ] );
         // $this->form->addFields( [ new TLabel('Dtcadastro'), $dtcadastro ] );
-        $row->layout = ['col-sm-4', 'col-sm-3'];
+        $row->layout = ['col-sm-2', 'col-sm-4'];
 
         if (!empty($id))
         {
@@ -53,26 +52,23 @@ class ProdutoFormList extends TPage
          **/
         
         // create the form actions
-        $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
-        $btn->class = 'btn btn-sm btn-primary';
-        // $this->form->addActionLink(_t('New'),  new TAction([$this, 'onEdit']), 'fa:eraser red');
         
+        $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
+        $btn->class = 'btn btn-sm btn-primary';
+        $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save green');
+        // $btn->class = 'btn btn-sm btn-primary';
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         // $this->datagrid->datatable = 'true';
-        // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
+        // $this->datagrid->enablePopover('Popover', 'Hi <b> {nome} </b>');
         
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'ID', 'left');
-        $column_nome = new TDataGridColumn('nome', 'PRODUTO', 'left');
-        $column_valor = new TDataGridColumn('valor', 'VALOR', 'left');
+        $column_cod = new TDataGridColumn('codigo', 'COD. PRODUTO', 'left');
+        $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'left');
-
-        $column_valor->setTransformer(function ($value) {
-            return Convert::toMonetario($value);
-        });
 
         $column_dtcadastro->setTransformer(function ($value) {
             return Convert::toDateBR($value);
@@ -81,8 +77,8 @@ class ProdutoFormList extends TPage
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
+        $this->datagrid->addColumn($column_cod);
         $this->datagrid->addColumn($column_nome);
-        $this->datagrid->addColumn($column_valor);
         $this->datagrid->addColumn($column_dtcadastro);
 
         
@@ -123,6 +119,43 @@ class ProdutoFormList extends TPage
         parent::add($container);
     }
     
+
+    /**
+     * Register the filter in the session
+     */
+    public function onSearch()
+    {
+        // get the search form data
+        $data = $this->form->getData();
+        
+        // clear session filters
+        TSession::setValue(__CLASS__.'_filter_nome',   NULL);
+        TSession::setValue(__CLASS__.'_filter_codigo',   NULL);
+
+
+        if (isset($data->nome) AND ($data->nome)) {
+            $filter = new TFilter('nome', 'like', "%{$data->nome}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_nome',   $filter); // stores the filter in the session
+        }
+
+        if (isset($data->codigo) AND ($data->codigo)) {
+            $filter = new TFilter('codigo', 'like', "%{$data->codigo}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_codigo',   $filter); // stores the filter in the session
+        }
+
+        
+        // fill the form with data again
+        $this->form->setData($data);
+        
+        // keep the search data in the session
+        TSession::setValue(__CLASS__ . '_filter_data', $data);
+        
+        $param = array();
+        $param['offset']    =0;
+        $param['first_page']=1;
+        $this->onReload($param);
+    }
+    
     /**
      * Load the datagrid with data
      */
@@ -148,6 +181,14 @@ class ProdutoFormList extends TPage
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
             
+            if (TSession::getValue(__CLASS__.'_filter_nome')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_nome')); // add the session filter
+            }
+
+            if (TSession::getValue(__CLASS__.'_filter_codigo')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_codigo')); // add the session filter
+            }
+
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             
@@ -160,6 +201,8 @@ class ProdutoFormList extends TPage
                     // add the object inside the datagrid
                     $this->datagrid->addItem($object);
                 }
+            }else{
+
             }
             
             // reset the criteria for record count
@@ -236,8 +279,8 @@ class ProdutoFormList extends TPage
             TTransaction::setLogger(new TLoggerTXT('log.txt')); // file
             **/
             
-            $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
+            $this->form->validate(); // validate form data
             
             $object = new Produto;  // create an empty object
             $object->fromArray( (array) $data); // load the object with data

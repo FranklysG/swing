@@ -21,7 +21,8 @@ class MapaReserva extends TRecord
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('reserva_id');
         parent::addAttribute('n_quarto');
-        parent::addAttribute('valor');
+        parent::addAttribute('valor_quarto');
+        parent::addAttribute('valor_consumo');
         parent::addAttribute('status');
         parent::addAttribute('dtcadastro');
     }

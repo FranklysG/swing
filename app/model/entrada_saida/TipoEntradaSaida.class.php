@@ -3,9 +3,9 @@
  * TipoEstoque Active Record
  * @author  <your-name-here>
  */
-class TipoEntrada extends TRecord
+class TipoEntradaSaida extends TRecord
 {
-    const TABLENAME = 'tipo_entrada';
+    const TABLENAME = 'tipo_entrada_saida';
     const PRIMARYKEY= 'id';
     const IDPOLICY =  'max'; // {max, serial}
     

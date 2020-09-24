@@ -54,7 +54,7 @@ class CartProdutoList extends TPage
         
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'right');
-        $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
+        $column_nome = new TDataGridColumn('produto->nome', 'NOME', 'left');
         $column_qtd = new TDataGridColumn('qtd', 'QTD', 'center');
         $column_check = new TDataGridColumn('check', '', 'right');
         $column_valor = new TDataGridColumn('valor_venda_uni', 'VALOR', 'right');
@@ -157,7 +157,7 @@ class CartProdutoList extends TPage
             if(isset($data)){
                 // atualiza o valor do mapa_reserva de acordo com a adição do produto
                 $mapa_reserva = MapaReserva::find($data->id_mapa_reserva);
-                $mapa_reserva->valor += $param['valor_venda_uni'];
+                $mapa_reserva->valor_consumo += $param['valor_venda_uni'];
                 $mapa_reserva->store(); 
                 
                 // incrementa o produto na tabela de consumo
@@ -171,7 +171,7 @@ class CartProdutoList extends TPage
                 $entrada->qtd_estoque -= 1;
                 $entrada->store(); 
 
-                $data->detail_valor = $mapa_reserva->valor;;
+                $data->detail_valor = $mapa_reserva->valor_quarto + $mapa_reserva->valor_consumo;
                 $obj = new stdClass;
                 $obj->check = 1;
                 TForm::sendData('form_cart_produto_list', $obj, false, false);
@@ -205,7 +205,7 @@ class CartProdutoList extends TPage
             // atualiza o valor do mapa_reserva de acordo com a remoção do produto
             $data = TSession::getValue('form_cart_produto_list_obj');
             $mapa_reserva = MapaReserva::find($data->id_mapa_reserva);
-            $mapa_reserva->valor -= $param['valor_venda_uni'];
+            $mapa_reserva->valor_consumo -= $param['valor_venda_uni'];
             $mapa_reserva->store(); 
             
             // Remove o produto selecionado
@@ -218,11 +218,11 @@ class CartProdutoList extends TPage
             $entrada->qtd_estoque += 1;
             $entrada->store(); 
 
-            $obj = $data;
-            $obj->detail_valor = $mapa_reserva->valor;
-            $obj->check = 0;
+            $data->detail_valor = $mapa_reserva->valor_quarto + $mapa_reserva->valor_consumo;
+            $obj = new stdClass;
+            $obj->check = 1;
             TForm::sendData('form_cart_produto_list', $obj, false, false);
-            TSession::setValue('form_cart_produto_list_obj', $obj);
+            TSession::setValue('form_cart_produto_list_obj', $data);
             
             $page = '';
             $offset = '';
@@ -257,7 +257,7 @@ class CartProdutoList extends TPage
                 $obj = MapaReserva::find($key);
                 $obj->id_mapa_reserva = $key;
                 $obj->detail_n_quarto = $obj->n_quarto;
-                $obj->detail_valor = $obj->valor;
+                $obj->detail_valor = $obj->valor_quarto + $obj->valor_consumo;
                 $this->form->setData($obj);
                 TSession::setValue('form_cart_produto_list_obj',$obj);
             }else{

@@ -1,5 +1,5 @@
-
 @media screen and (max-width: 1400px) {
+    /* edita os campos do carrinho de produtos */
     .right-panel {
         width: 500px !important;
     }
@@ -8,15 +8,25 @@
         margin-bottom: 10px !important;
         padding: 0px !important;
     }
+     /* edita a grid que fica os quartos ocupados */
+    #mapaReserva_list{
+        width: 100% !important;
+    }
 }
 
 @media screen and (max-width: 1000px) {
+    /* edita os campos do carrinho de produtos */
     .right-panel {
         width: 500px !important;
+    }
+    /* edita a grid que fica os quartos ocupados */
+    #mapaReserva_list{
+        width: 100% !important;
     }
 }
 
 @media screen and (max-width: 500px) {
+    /* edita os campos do carrinho de produtos */
     .right-panel {
         width: 95% !important;
     }
@@ -24,5 +34,9 @@
         margin-top: -15px !important;
         margin-bottom: 10px !important;
         padding: 0px !important;
+    }
+    /* edita a grid que fica os quartos ocupados */
+    #mapaReserva_list{
+        width: 490px !important;
     }
 }

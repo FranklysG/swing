@@ -15,8 +15,8 @@ class Produto extends TRecord
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
+        parent::addAttribute('codigo');
         parent::addAttribute('nome');
-        parent::addAttribute('valor');
         parent::addAttribute('dtcadastro');
     }
 

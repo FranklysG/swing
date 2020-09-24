@@ -29,8 +29,9 @@ class ReservaForm extends TPage
         $detail_id = new THidden('detail_id');
         $detail_n_quarto = new TEntry('detail_n_quarto');
         $detail_n_quarto->addValidation('numero do quarto', new TRequiredValidator);
-        $detail_valor = new TEntry('detail_valor');
-        $detail_valor->setMask('9!');
+        $detail_valor_quarto = new TEntry('detail_valor_quarto');
+        $detail_valor_quarto->setMask('9!');
+        $detail_valor_consumo = new THidden('detail_valor_consumo');
         $detail_status = new THidden('detail_status');
         $detail_dtcadastro = new THidden('detail_dtcadastro');
         
@@ -42,13 +43,13 @@ class ReservaForm extends TPage
         }
         
         // // detail fields
-        $this->form->addFields([$id,$detail_uniqid,$detail_id]);
+        $this->form->addFields([$id,$detail_uniqid,$detail_id,$detail_valor_consumo]);
         
         $add = TButton::create('add', [$this, 'onDetailAdd'], 'Register', 'fa:plus-circle green');
         $add->getAction()->setParameter('static','1');
 
         $row = $this->form->addFields( [new TLabel('NUMERO DO QUARTO'), $detail_n_quarto],
-                                        [new TLabel('VALOR'), $detail_valor],
+                                        [new TLabel('VALOR'), $detail_valor_quarto],
                                         [new TLabel(''), $add],
                                         [new TLabel(''), $detail_status],
                                         [new TLabel(''), $detail_dtcadastro] );
@@ -56,16 +57,29 @@ class ReservaForm extends TPage
         $row->layout = ['col-sm-3','col-sm-3','col-sm-3','col-sm-2','col-sm-2'];
        
         $this->detail_list = new BootstrapDatagridWrapper(new TDataGrid);
-        $this->detail_list->setId('MapaReserva_list');
+        $this->detail_list->setId('mapaReserva_list');
         $this->detail_list->generateHiddenFields();
-        // $this->detail_list->style = "min-width: 700px; width:100%;margin-bottom: 10px";
-        $this->detail_list->style = "width:100%;margin-bottom: 10px";
+        // $this->detail_list->datatable = 'true';
+        // $this->detail_list->style = "margin-bottom: 10px";
         
-        $column_valor = new TDataGridColumn('valor', 'VALOR', 'left', 100);
+        $column_uniqid = new TDataGridColumn('uniqid', 'Uniqid', 'left');
+        $column_id = new TDataGridColumn('id', 'Id', 'left') ;
+        $column_n_quarto = new TDataGridColumn('n_quarto', 'QTO', 'center', 100) ;
+        $column_valor_quarto = new TDataGridColumn('valor_quarto', 'VALOR', 'left', 100);
+        $column_valor_consumo = new TDataGridColumn('valor_consumo', 'CONSUMO', 'left', 100);
+        $column_valor_total = new TDataGridColumn('={valor_quarto}+{valor_consumo}', 'TOTAL', 'center', 100);
         $column_dtcadastro = new TDataGridColumn('dtcadastro', 'DATA', 'center', 100);
         $column_status = new TDataGridColumn('status', 'STATUS', 'center', 100);
         
-        $column_valor->setTransformer(function ($value) {
+        $column_valor_quarto->setTransformer(function ($value) {
+            return Convert::toMonetario($value);
+        });
+
+        $column_valor_consumo->setTransformer(function ($value) {
+            return Convert::toMonetario($value);
+        });
+
+        $column_valor_total->setTransformer(function ($value) {
             return Convert::toMonetario($value);
         });
 
@@ -92,12 +106,14 @@ class ReservaForm extends TPage
         });
 
         // items
-        $this->detail_list->addColumn( new TDataGridColumn('uniqid', 'Uniqid', 'left') )->setVisibility(false);
-        $this->detail_list->addColumn( new TDataGridColumn('id', 'Id', 'left') )->setVisibility(false);
-        $this->detail_list->addColumn( new TDataGridColumn('n_quarto', 'N QUARTO', 'left', 100) );
-        $this->detail_list->addColumn( $column_valor );
+        $this->detail_list->addColumn( $column_uniqid)->setVisibility(false);
+        $this->detail_list->addColumn( $column_id )->setVisibility(false);
+        $this->detail_list->addColumn( $column_n_quarto );
+        $this->detail_list->addColumn( $column_valor_quarto );
+        $this->detail_list->addColumn( $column_valor_consumo );
+        $this->detail_list->addColumn( $column_valor_total );
         // $this->detail_list->addColumn( $column_status );
-        // $this->detail_list->addColumn( $column_dtcadastro );
+        $this->detail_list->addColumn( $column_dtcadastro );
 
         // detail actions
         $action2 = new TDataGridAction([$this, 'onDetailEdit'] );
@@ -182,7 +198,6 @@ class ReservaForm extends TPage
                 throw new Exception('The field fieldX is required');
             }
             **/
-
             // soma o valor do produto e adiciona na grid 
             $produto_valor = 0;
             if(isset($param['detail_produto_id'])){
@@ -196,7 +211,8 @@ class ReservaForm extends TPage
             $grid_data['uniqid'] = $uniqid;
             $grid_data['id'] = $data->detail_id;
             $grid_data['n_quarto'] = $data->detail_n_quarto;
-            $grid_data['valor'] = ($data->detail_valor)? $data->detail_valor + $produto_valor : 30 + $produto_valor;
+            $grid_data['valor_quarto'] = ($data->detail_valor_quarto)?: 30 ;
+            $grid_data['valor_consumo'] = ($data->detail_valor_consumo)?: 0 ;
             $grid_data['status'] = ($data->detail_status)?: 1;
             // $grid_data['dtcadastro'] = date('d/m/Y');
             
@@ -204,13 +220,14 @@ class ReservaForm extends TPage
             $row = $this->detail_list->addItem( (object) $grid_data );
             $row->id = $uniqid;
             
-            TDataGrid::replaceRowById('MapaReserva_list', $uniqid, $row);
+            TDataGrid::replaceRowById('mapaReserva_list', $uniqid, $row);
             
             // clear detail form fields
             $data->detail_uniqid = '';
             $data->detail_id = '';
             $data->detail_n_quarto = '';
-            $data->detail_valor = '';
+            $data->detail_valor_quarto = '';
+            $data->detail_valor_consumo = '';
             $data->detail_status = '';
             $data->detail_dtcadastro = '';
             
@@ -236,7 +253,8 @@ class ReservaForm extends TPage
         $data->detail_uniqid = $param['uniqid'];
         $data->detail_id = $param['id'];
         $data->detail_n_quarto = $param['n_quarto'];
-        $data->detail_valor = $param['valor'];
+        $data->detail_valor_quarto = $param['valor_quarto'];
+        $data->detail_valor_consumo = $param['valor_consumo'];
         $data->detail_status = $param['status'];
         // $data->detail_dtcadastro = $param['dtcadastro'];
         
@@ -275,14 +293,15 @@ class ReservaForm extends TPage
             $data->detail_uniqid = '';
             $data->detail_id = '';
             $data->detail_n_quarto = '';
-            $data->detail_valor = '';
+            $data->detail_valor_quarto = '';
+            $data->detail_valor_consumo = '';
             $data->detail_status = '';
             $data->detail_dtcadastro = '';
             
             // send data, do not fire change/exit events
             TForm::sendData( 'form_Reserva', $data, false, false );
             // remove row
-            TDataGrid::removeRowById('MapaReserva_list', $param['uniqid']);
+            TDataGrid::removeRowById('mapaReserva_list', $param['uniqid']);
             
             TTransaction::close(); // close the transaction
             
@@ -357,18 +376,19 @@ class ReservaForm extends TPage
             $data = $this->form->getData();
             // $this->form->validate();
 
-            if( isset($param['MapaReserva_list_id']) )
+            if( isset($param['mapaReserva_list_id']) )
             {
-                foreach( $param['MapaReserva_list_id'] as $key => $item_id )
+                foreach( $param['mapaReserva_list_id'] as $key => $item_id )
                 {
                     $detail = MapaReserva::where('reserva_id', '=', $master_id)
-                                    ->where('id','=',$param['MapaReserva_list_id'][$key])->first();
+                                    ->where('id','=',$param['mapaReserva_list_id'][$key])->first();
 
                     if(!$detail)
                         $detail = new MapaReserva;
-                    $detail->n_quarto  = $param['MapaReserva_list_n_quarto'][$key];
-                    $detail->valor  = $param['MapaReserva_list_valor'][$key];
-                    // $detail->status  = $param['MapaReserva_list_status'][$key];
+                    $detail->n_quarto  = $param['mapaReserva_list_n_quarto'][$key];
+                    $detail->valor_quarto  = $param['mapaReserva_list_valor_quarto'][$key];
+                    $detail->valor_consumo  = $param['mapaReserva_list_valor_consumo'][$key];
+                    // $detail->status  = $param['mapaReserva_list_status'][$key];
                     $detail->status  = 1;
                     $detail->reserva_id = $master_id;
                     $detail->store();
