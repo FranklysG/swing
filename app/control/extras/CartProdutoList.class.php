@@ -160,6 +160,14 @@ class CartProdutoList extends TPage
                 $mapa_reserva->valor_consumo += $param['valor_venda_uni'];
                 $mapa_reserva->store(); 
                 
+                $entrada = Entrada::find($param['id']);
+                $entrada->qtd_estoque -= 1;
+                if($entrada->qtd_estoque < 1){
+                    // status 1 quer dizer que não tem mais produto 
+                    $entrada->status = 1;
+                    throw new Exception("Sem produto no estoque", 1);    
+                }
+
                 // incrementa o produto na tabela de consumo
                 $consumo = new Consumo;
                 $consumo->produto_id = $param['id'];
@@ -167,8 +175,8 @@ class CartProdutoList extends TPage
                 $consumo->mapa_reserva_id = $data->id_mapa_reserva;
                 $consumo->store();
                 
-                $entrada = Entrada::find($param['id']);
-                $entrada->qtd_estoque -= 1;
+                
+                
                 $entrada->store(); 
 
                 $data->detail_valor = $mapa_reserva->valor_quarto + $mapa_reserva->valor_consumo;
@@ -191,7 +199,7 @@ class CartProdutoList extends TPage
             TTransaction::close();
         }  catch (Exception $e)
         {
-            new TMessage('error', $e->getMessage());
+            new TMessage('info', $e->getMessage());
             TTransaction::rollback();
         }
        
@@ -216,6 +224,7 @@ class CartProdutoList extends TPage
             
             $entrada = Entrada::find($param['id']);
             $entrada->qtd_estoque += 1;
+            $entrada->status = 0;
             $entrada->store(); 
 
             $data->detail_valor = $mapa_reserva->valor_quarto + $mapa_reserva->valor_consumo;
@@ -281,8 +290,11 @@ class CartProdutoList extends TPage
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
+            // tipo da entrada 1 = consumo
             $criteria->add(new TFilter('tipo_entrada_id','=',1));
             
+            // status 0 diz que o produto ainda ta disponivel
+            $criteria->add(new TFilter('status','!=',1));
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             

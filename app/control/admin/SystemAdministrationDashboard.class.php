@@ -28,6 +28,8 @@ class SystemAdministrationDashboard extends TPage
             $indicator2 = new THtmlRenderer('app/resources/info-box.html');
             $indicator3 = new THtmlRenderer('app/resources/info-box.html');
             $indicator4 = new THtmlRenderer('app/resources/info-box.html');
+            $indicator5 = new THtmlRenderer('app/resources/info-box.html');
+            $indicator6 = new THtmlRenderer('app/resources/info-box.html');
            
             // mapa_reservas semanais
             $repositoy = new TRepository('ViewFaturamento');
@@ -35,9 +37,11 @@ class SystemAdministrationDashboard extends TPage
             
             foreach ($objects as $value) {
                 $indicator1->enableSection('main', ['title' => 'Ocupados Hoje',    'icon' => 'users',       'background' => 'orange', 'value' => $value->ocupados_hoje]);
-                $indicator2->enableSection('main', ['title' => 'Luc. Liq semanal',   'icon' => 'money-bill-wave',      'background' => 'blue',   'value' => Convert::toMonetario($value->est_faturamento_semanal - $value->est_saida_semanal)]);
-                $indicator3->enableSection('main', ['title' => 'Luc. Liq mensal',    'icon' => 'receipt', 'background' => 'purple', 'value' => Convert::toMonetario($value->est_faturamento_mensal - $value->est_saida_mensal)]);
-                $indicator4->enableSection('main', ['title' => 'Luc. Liq anual', 'icon' => 'wallet',       'background' => 'green',  'value' => Convert::toMonetario($value->est_faturamento_anual - $value->est_saida_anual)]);
+                $indicator2->enableSection('main', ['title' => 'Entradas Mês', 'icon' => 'coins',       'background' => 'blue',  'value' => Convert::toMonetario($value->est_faturamento_mensal)]);
+                $indicator3->enableSection('main', ['title' => 'Saida Mês', 'icon' => 'money-check-alt',       'background' => 'red',  'value' => Convert::toMonetario($value->est_saida_mensal)]);
+                $indicator4->enableSection('main', ['title' => 'Luc. Liq semanal',   'icon' => 'hand-holding-usd',      'background' => 'orange',   'value' => Convert::toMonetario($value->est_faturamento_semanal - $value->est_saida_semanal)]);
+                $indicator5->enableSection('main', ['title' => 'Luc. Liq mensal',    'icon' => 'receipt', 'background' => 'purple', 'value' => Convert::toMonetario($value->est_faturamento_mensal - $value->est_saida_mensal)]);
+                $indicator6->enableSection('main', ['title' => 'Luc. Liq anual', 'icon' => 'money-bill-wave',       'background' => 'green',  'value' => Convert::toMonetario($value->est_faturamento_anual - $value->est_saida_anual)]);
             }
             
             
@@ -75,6 +79,8 @@ class SystemAdministrationDashboard extends TPage
                                           'indicator2' => $indicator2,
                                           'indicator3' => $indicator3,
                                           'indicator4' => $indicator4,
+                                          'indicator5' => $indicator5,
+                                          'indicator6' => $indicator6,
                                           'chart1'     => $chart,
                                           'chart2'     => ''] );
             
