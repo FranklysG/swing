@@ -164,7 +164,7 @@ class CartProdutoList extends TPage
                 $entrada->qtd_estoque -= 1;
                 if($entrada->qtd_estoque < 1){
                     // status 1 quer dizer que não tem mais produto 
-                    $entrada->status = 1;
+                    $entrada->status = 0;
                     throw new Exception("Sem produto no estoque", 1);    
                 }
 
@@ -224,7 +224,7 @@ class CartProdutoList extends TPage
             
             $entrada = Entrada::find($param['id']);
             $entrada->qtd_estoque += 1;
-            $entrada->status = 0;
+            $entrada->status = 1;
             $entrada->store(); 
 
             $data->detail_valor = $mapa_reserva->valor_quarto + $mapa_reserva->valor_consumo;

@@ -283,7 +283,7 @@ class ReservaList extends TPage
                     $mapa_reservas = MapaReserva::where('reserva_id','=',$object->id)->load();
                     if($mapa_reservas){
                         foreach($mapa_reservas as $value){
-                            $mapa_reserva_valor += $value->valor;
+                            $mapa_reserva_valor += ($value->valor_quarto + $value->valor_consumo);
                             $object->faturamento_dia = $mapa_reserva_valor;
                         }
                     }

@@ -17,14 +17,14 @@ class ViewFaturamento extends TRecord
     {
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('ocupados_hoje');
-        parent::addAttribute('est_faturamento_semanal');
-        parent::addAttribute('est_faturamento_mensal');
-        parent::addAttribute('est_faturamento_anual');
+        parent::addAttribute('est_entrada_semanal_quarto');
+        parent::addAttribute('est_entrada_mensal_quarto');
+        parent::addAttribute('est_entrada_anual_quarto');
         parent::addAttribute('est_saida_semanal');
         parent::addAttribute('est_saida_mensal');
         parent::addAttribute('est_saida_anual');
-        parent::addAttribute('prod_lucro_mensal');
-        parent::addAttribute('prod_lucro_anual');
+        parent::addAttribute('est_entrada_mensal');
+        parent::addAttribute('est_entrada_anual');
     }
 
 
