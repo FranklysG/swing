@@ -53,9 +53,9 @@ class ProdutoFormList extends TPage
         
         // create the form actions
         
+        $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save green');
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save green');
         // $btn->class = 'btn btn-sm btn-primary';
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -201,8 +201,6 @@ class ProdutoFormList extends TPage
                     // add the object inside the datagrid
                     $this->datagrid->addItem($object);
                 }
-            }else{
-
             }
             
             // reset the criteria for record count
@@ -258,7 +256,8 @@ class ProdutoFormList extends TPage
         }
         catch (Exception $e) // in case of exception
         {
-            new TMessage('error', $e->getMessage()); // shows the exception error message
+            new TMessage('error','Produto foi consumido por um cliente'); // shows the exception error message
+            // new TMessage('error', $e->getMessage()); // shows the exception error message
             TTransaction::rollback(); // undo all pending operations
         }
     }
@@ -282,18 +281,26 @@ class ProdutoFormList extends TPage
             $data = $this->form->getData(); // get form data as array
             $this->form->validate(); // validate form data
             
-            $object = new Produto;  // create an empty object
-            $object->fromArray( (array) $data); // load the object with data
-            $object->store(); // save the object
+            $object = Produto::where('codigo','=',$data->codigo)->load();  // create an empty object
+            if($object){
+                new TMessage('info', 'Produto já cadastrado', new TAction([$this, 'onReload']));
+            }else{
+                
+                $object = new Produto;
+                $object->fromArray( (array) $data); // load the object with data
+                $object->store(); // save the object
+                
+                // get the generated id
+                $data->id = $object->id;
+                
+                $this->form->setData($data); // fill form data
+                TTransaction::close(); // close the transaction
+                
+                new TMessage('info', 'Salvo com sucesso', new TAction([$this, 'onReload'])); // success message
+                // $this->onReload(); // reload the listing
+            }
             
-            // get the generated id
-            $data->id = $object->id;
             
-            $this->form->setData($data); // fill form data
-            TTransaction::close(); // close the transaction
-            
-            new TMessage('info', 'Salvo com sucesso', new TAction([$this, 'onReload'])); // success message
-            // $this->onReload(); // reload the listing
         }
         catch (Exception $e) // in case of exception
         {

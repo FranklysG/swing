@@ -23,7 +23,7 @@ class EntradaFormList extends TPage
         parent::__construct();
             
         $this->form = new BootstrapFormBuilder('form_Entrada');
-        $this->form->setFormTitle('Entrada');
+        $this->form->setFormTitle('Entradas');
         $this->form->setFieldSizes('100%');
         
 
@@ -42,19 +42,24 @@ class EntradaFormList extends TPage
         $valor_venda_uni = new TEntry('valor_venda_uni');
         $valor_venda_uni->setNumericMask(2, ',', '.', true);
         $status = new TEntry('status');
-        $dtcadastro = new TEntry('dtcadastro');
+        $dtcadastro = new TDate('dtcadastro');
+        $dtcadastro->setMask('dd/mm/yyyy');
+        $dtcadastro->setDatabaseMask('yyyy-mm-dd');
 
         $this->form->addFields( [$id ]);
         // add the fields
         $row = $this->form->addFields(
                                 [ new TLabel('Tipo Entrada'), $tipo_entrada_id ],
-                                [ new TLabel('Descrição Produto'), $produto_id ] ,
-                                [ new TLabel('Quantidade'), $qtd_nota ] ,
-                                [ new TLabel('Valor Unitario'), $valor_uni ],
-                                [ new TLabel('Valor de venda uni'), $valor_venda_uni ]);
+                                [ new TLabel('Produto'), $produto_id ] ,
+                                [ new TLabel('Quantidade'), $qtd_nota ],
+                                [ new TLabel('Valor Uni'), $valor_uni ] );
 
-        $row->layout = ['col-sm-2','col-sm-4','col-sm-2','col-sm-2','col-sm-2'];
+        $row->layout = ['col-sm-3','col-sm-3','col-sm-3','col-sm-3'];
+        $row = $this->form->addFields(
+                                [ new TLabel('Valor Venda Uni'), $valor_venda_uni],
+                                [ new TLabel('Data'), $dtcadastro ]);
 
+        $row->layout = ['col-sm-3','col-sm-3'];
         // set sizes
      
         if (!empty($id))

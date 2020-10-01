@@ -32,13 +32,16 @@ class SaidaFormList extends TPage
         $valor_saida = new TEntry('valor_saida');
         $valor_saida->setNumericMask(2, ',', '.', true);
         $status = new THidden('status');
-        $dtcadastro = new THidden('dtcadastro');
+        $dtcadastro = new TDate('dtcadastro');
+        $dtcadastro->setMask('dd/mm/yyyy');
+        $dtcadastro->setDatabaseMask('yyyy-mm-dd');
 
         // add the fields
         $this->form->addFields([ $id ]);
         $row = $this->form->addFields( [ new TLabel('Tipo da Saida'),$tipo_saida_id ] ,
                                 [ new TLabel('Descrição'),$descricao ] ,
-                                [ new TLabel('Valor'),$valor_saida ] 
+                                [ new TLabel('Valor'),$valor_saida ] ,
+                                [ new TLabel('Data'),$dtcadastro ] 
                                 );
         
         $row->layout = ['col-sm-3','col-sm-4','col-sm-2','col-sm-2','col-sm-2'];
@@ -179,7 +182,7 @@ class SaidaFormList extends TPage
             // default order
             if (empty($param['order']))
             {
-                $param['order'] = 'id';
+                $param['order'] = 'dtcadastro';
                 $param['direction'] = 'asc';
             }
             $criteria->setProperties($param); // order, offset
