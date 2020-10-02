@@ -27,14 +27,18 @@ class SaidaFormList extends TPage
         $id = new THidden('id');
         $tipo_saida_id = new TDBUniqueSearch('tipo_saida_id', 'app', 'TipoEntradaSaida', 'id', 'nome');
         $tipo_saida_id->setMinLength(0);
+        $tipo_saida_id->addValidation('Campo Tipo da saida', new TRequiredValidator);
         $descricao = new TEntry('descricao');
         $descricao->forceUpperCase();
+        $descricao->addValidation('Campo Descrição', new TRequiredValidator);
         $valor_saida = new TEntry('valor_saida');
         $valor_saida->setNumericMask(2, ',', '.', true);
+        $valor_saida->addValidation('Campo de valor', new TRequiredValidator);
         $status = new THidden('status');
         $dtcadastro = new TDate('dtcadastro');
         $dtcadastro->setMask('dd/mm/yyyy');
         $dtcadastro->setDatabaseMask('yyyy-mm-dd');
+        $dtcadastro->addValidation('Campo Data', new TRequiredValidator);
 
         // add the fields
         $this->form->addFields([ $id ]);
@@ -63,7 +67,7 @@ class SaidaFormList extends TPage
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
-        $this->datagrid->style = 'width: 100%';
+        $this->datagrid->style = 'min-width: 800px';
         // $this->datagrid->datatable = 'true';
         // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
         
@@ -140,12 +144,19 @@ class SaidaFormList extends TPage
         $this->pageNavigation->setAction(new TAction([$this, 'onReload']));
         $this->pageNavigation->setWidth($this->datagrid->getWidth());
         
+        $panel = new TPanelGroup('Cadastro de novas Saidas');
+        $panel->add($this->datagrid);
+        $panel->addFooter($this->pageNavigation);
+        
+        // turn on horizontal scrolling inside panel body
+        $panel->getBody()->style = "overflow-x:auto;";
+
         // vertical box container
         $container = new TVBox;
         $container->style = 'width: 100%';
         // $container->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
         $container->add($this->form);
-        $container->add(TPanelGroup::pack('', $this->datagrid, $this->pageNavigation));
+        $container->add($panel);
         
         parent::add($container);
     }
@@ -160,6 +171,7 @@ class SaidaFormList extends TPage
                 return FALSE;
             }
         }
+        return true;
         
     }
     
@@ -183,7 +195,7 @@ class SaidaFormList extends TPage
             if (empty($param['order']))
             {
                 $param['order'] = 'dtcadastro';
-                $param['direction'] = 'asc';
+                $param['direction'] = 'desc';
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
@@ -278,13 +290,18 @@ class SaidaFormList extends TPage
             
             $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
-            
+           
             $object = new Saida;  // create an empty object
             $object->fromArray( (array) $data); // load the object with data
             $object->entrada_id = 1;
             $object->usuario_id = TSession::getValue('userid');
             $object->status = 1;
-            $object->store(); // save the object
+            (!isset($data->dtcadastro))? 
+                $object->store()
+            : 
+                $object->dtcadastro = $data->dtcadastro;
+            $object->store();
+             // save the object
             
             // get the generated id
             $data->id = $object->id;

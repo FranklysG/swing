@@ -31,20 +31,26 @@ class EntradaFormList extends TPage
         $id = new THidden('id');
         $tipo_entrada_id = new TDBUniqueSearch('tipo_entrada_id', 'app', 'TipoEntradaSaida', 'id', 'nome');
         $tipo_entrada_id->setMinLength(0);
+        $tipo_entrada_id->addValidation('Campo Data', new TRequiredValidator);
         $produto_id = new TDBUniqueSearch('produto_id', 'app', 'Produto', 'id', 'nome');
         $produto_id->setMinLength(0);
+        $produto_id->addValidation('Campo Data', new TRequiredValidator);
         $usuario_id = new TEntry('usuario_id');
         $descricao = new TEntry('descricao');
         $descricao->forceUpperCase();
         $qtd_nota = new TEntry('qtd_nota');
+        $qtd_nota->addValidation('Campo Data', new TRequiredValidator);
         $valor_uni = new TEntry('valor_uni');
         $valor_uni->setNumericMask(2, ',', '.', true);
+        $valor_uni->addValidation('Campo Data', new TRequiredValidator);
         $valor_venda_uni = new TEntry('valor_venda_uni');
         $valor_venda_uni->setNumericMask(2, ',', '.', true);
+        $valor_venda_uni->addValidation('Campo Data', new TRequiredValidator);
         $status = new TEntry('status');
         $dtcadastro = new TDate('dtcadastro');
         $dtcadastro->setMask('dd/mm/yyyy');
         $dtcadastro->setDatabaseMask('yyyy-mm-dd');
+        $dtcadastro->addValidation('Campo Data', new TRequiredValidator);
 
         $this->form->addFields( [$id ]);
         // add the fields
@@ -79,14 +85,14 @@ class EntradaFormList extends TPage
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
-        $this->datagrid->style = 'width: 100%';
+        $this->datagrid->style = 'min-width: 800px';
         // $this->datagrid->datatable = 'true';
         // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
         
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_tipo_entrada_id = new TDataGridColumn('tipo_entrada->nome', 'TIPO DA ENTRADA', 'left');
+        $column_tipo_entrada_id = new TDataGridColumn('tipo_entrada->nome', 'TIPO', 'left');
         $column_produto_id = new TDataGridColumn('produto->nome', 'PRODUTO', 'left');
         $column_usuario_id = new TDataGridColumn('usuario_id', 'Usuario Id', 'left');
         $column_nome = new TDataGridColumn('descricao', 'NOME', 'left');
@@ -176,17 +182,25 @@ class EntradaFormList extends TPage
         // create the datagrid model
         $this->datagrid->createModel();
         
+        
         // creates the page navigation
         $this->pageNavigation = new TPageNavigation;
         $this->pageNavigation->setAction(new TAction([$this, 'onReload']));
         $this->pageNavigation->setWidth($this->datagrid->getWidth());
+        
+        $panel = new TPanelGroup('Cadastro de novas entradas');
+        $panel->add($this->datagrid);
+        $panel->addFooter($this->pageNavigation);
+        
+        // turn on horizontal scrolling inside panel body
+        $panel->getBody()->style = "overflow-x:auto;";
         
         // vertical box container
         $container = new TVBox;
         $container->style = 'width: 100%';
         // $container->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
         $container->add($this->form);
-        $container->add(TPanelGroup::pack('', $this->datagrid, $this->pageNavigation));
+        $container->add($panel);
         
         parent::add($container);
     }
@@ -230,8 +244,8 @@ class EntradaFormList extends TPage
             // default order
             if (empty($param['order']))
             {
-                $param['order'] = 'id';
-                $param['direction'] = 'asc';
+                $param['order'] = 'dtcadastro';
+                $param['direction'] = 'desc';
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
