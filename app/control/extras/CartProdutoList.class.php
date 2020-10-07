@@ -88,9 +88,10 @@ class CartProdutoList extends TPage
 
         $action1 = new TDataGridAction([$this, 'onAddItem'],['static'=>'1']);
         $action1->setFields(['id', 'valor_venda_uni']);
+        $action1->setDisplayCondition( array($this, 'displayColumnPlus') );
         $action2 = new TDataGridAction([$this, 'onDelItem'],['static'=>'1']);
-        $action2->setDisplayCondition( array($this, 'displayColumn') );
         $action2->setFields(['id', 'valor_venda_uni']);
+        $action2->setDisplayCondition( array($this, 'displayColumnMinus') );
         
         $this->datagrid->addAction($action1, 'adicionar',   'fa:plus-circle green');
         $this->datagrid->addAction($action2 ,'remover', 'fa:minus-circle red');
@@ -112,7 +113,16 @@ class CartProdutoList extends TPage
 
     }
     
-    public function displayColumn( $object )
+    public function displayColumnPlus( $object )
+    {
+        if ($object->qtd_estoque >= 1)
+        {
+            return TRUE;
+        }
+        return FALSE;
+    }
+
+    public function displayColumnMinus( $object )
     {
         if ($object->check == 1)
         {
@@ -162,20 +172,19 @@ class CartProdutoList extends TPage
                 
                 $entrada = Entrada::find($param['id']);
                 $entrada->qtd_estoque -= 1;
-                if($entrada->qtd_estoque < 1){
+                if($entrada->qtd_estoque == 0){
                     // status 1 quer dizer que não tem mais produto 
+                    $entrada->qtd_estoque = 0;
                     $entrada->status = 0;
-                    throw new Exception("Sem produto no estoque", 1);    
+                    new TMessage('info',"Sem produto no estoque");
                 }
-
+                
                 // incrementa o produto na tabela de consumo
                 $consumo = new Consumo;
                 $consumo->produto_id = $param['id'];
                 $consumo->entrada_id = $param['id'];
                 $consumo->mapa_reserva_id = $data->id_mapa_reserva;
                 $consumo->store();
-                
-                
                 
                 $entrada->store(); 
 
@@ -336,6 +345,7 @@ class CartProdutoList extends TPage
                         // não tiver ele adiciona um na contagem
                         if($object->id == $value){
                             $object->qtd += 1;
+                            // check serve pra controlar o botão de menos
                             $object->check = 1;
                         }
                     }
