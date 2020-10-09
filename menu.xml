@@ -34,7 +34,7 @@
   <menuitem label="Relatorios">
     <icon>fas:file-alt fa-fw</icon>
     <menu>
-      <menuitem label="Faturamento">
+      <menuitem label="Ocupações">
         <action>ViewRelatorioOcupacaoReport</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
