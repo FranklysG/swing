@@ -98,8 +98,8 @@ INSERT INTO system_program VALUES(38,'System Administration Dashboard','SystemAd
 INSERT INTO system_program VALUES(39,'System Log Dashboard','SystemLogDashboard');
 INSERT INTO system_program VALUES(40,'System Session dump','SystemSessionDumpView');
 
-INSERT INTO system_user VALUES(1,'Administrator','admin','21232f297a57a5a743894a0e4a801fc3','admin@admin.net',10,NULL,'Y');
-INSERT INTO system_user VALUES(2,'User','user','ee11cbb19052e40b07aac0ca060c23ee','user@user.net',7,NULL,'Y');
+INSERT INTO system_user VALUES(1,'Administrator','admin','21232f297a57a5a743894a0e4a801fc3','admin@admin.net',10,NULL,'Y',NULL,NULL);
+INSERT INTO system_user VALUES(2,'User','user','ee11cbb19052e40b07aac0ca060c23ee','user@user.net',7,NULL,'Y',NULL,NULL);
 
 INSERT INTO system_unit VALUES(1,'Unit A','unit_a');
 INSERT INTO system_unit VALUES(2,'Unit B','unit_b');
