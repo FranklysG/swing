@@ -10,8 +10,8 @@ class Saida extends TRecord
     const IDPOLICY =  'max'; // {max, serial}
     
     
-    private $system_user;
-    private $tipo_saida;
+    private $tipo_entrada_saida;
+    private $usuario;
 
     /**
      * Constructor method
@@ -20,65 +20,65 @@ class Saida extends TRecord
     {
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('usuario_id');
-        parent::addAttribute('tipo_saida_id');
+        parent::addAttribute('tipo_entrada_saida_id');
         parent::addAttribute('descricao');
         parent::addAttribute('valor_saida');
         parent::addAttribute('status');
         parent::addAttribute('dtcadastro');
     }
+
+    
+    /**
+     * Method set_tipo_entrada_saida
+     * Sample of usage: $saida->tipo_entrada_saida = $object;
+     * @param $object Instance of TipoEntradaSaida
+     */
+    public function set_tipo_entrada_saida(TipoEntradaSaida $object)
+    {
+        $this->tipo_entrada_saida = $object;
+        $this->tipo_entrada_saida_id = $object->id;
+    }
+    
+    /**
+     * Method get_tipo_entrada_saida
+     * Sample of usage: $saida->tipo_entrada_saida->attribute;
+     * @returns TipoEntradaSaida instance
+     */
+    public function get_tipo_entrada_saida()
+    {
+        // loads the associated object
+        if (empty($this->tipo_entrada_saida))
+            $this->tipo_entrada_saida = new TipoEntradaSaida($this->tipo_entrada_saida_id);
+    
+        // returns the associated object
+        return $this->tipo_entrada_saida;
+    }
     
     
     /**
-     * Method set_system_user
-     * Sample of usage: $saida->system_user = $object;
+     * Method set_usuario
+     * Sample of usage: $saida->usuario = $object;
      * @param $object Instance of SystemUser
      */
-    public function set_system_user(SystemUser $object)
+    public function set_usuario(SystemUser $object)
     {
-        $this->system_user = $object;
-        $this->system_user_id = $object->id;
+        $this->usuario = $object;
+        $this->usuario_id = $object->id;
     }
     
     /**
-     * Method get_system_user
-     * Sample of usage: $saida->system_user->attribute;
+     * Method get_usuario
+     * Sample of usage: $saida->usuario->attribute;
      * @returns SystemUser instance
      */
-    public function get_system_user()
+    public function get_usuario()
     {
         // loads the associated object
-        if (empty($this->system_user))
-            $this->system_user = new SystemUser($this->system_user_id);
+        if (empty($this->usuario))
+            $this->usuario = new SystemUser($this->usuario_id);
     
         // returns the associated object
-        return $this->system_user;
-    }
-    
-    
-    /**
-     * Method set_tipo_saida
-     * Sample of usage: $saida->tipo_saida = $object;
-     * @param $object Instance of TipoSaida
-     */
-    public function set_tipo_saida(TipoEntradaSaida $object)
-    {
-        $this->tipo_saida = $object;
-        $this->tipo_saida_id = $object->id;
-    }
-    
-    /**
-     * Method get_tipo_saida
-     * Sample of usage: $saida->tipo_saida->attribute;
-     * @returns TipoSaida instance
-     */
-    public function get_tipo_saida()
-    {
-        // loads the associated object
-        if (empty($this->tipo_saida))
-            $this->tipo_saida = new TipoEntradaSaida($this->tipo_saida_id);
-    
-        // returns the associated object
-        return $this->tipo_saida;
+        return $this->usuario;
     }
     
 

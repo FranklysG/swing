@@ -1,6 +1,6 @@
 <?php
 /**
- * entrada Active Record
+ * Entrada Active Record
  * @author  <your-name-here>
  */
 class Entrada extends TRecord
@@ -10,18 +10,18 @@ class Entrada extends TRecord
     const IDPOLICY =  'max'; // {max, serial}
     
     
-    private $tipo_entrada;
-    private $consumo;
-    private $usuario;
+    private $tipo_entrada_saida;
     private $produto;
+    private $usuario;
+
     /**
      * Constructor method
      */
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
+        parent::addAttribute('tipo_entrada_saida_id');
         parent::addAttribute('produto_id');
-        parent::addAttribute('tipo_entrada_id');
         parent::addAttribute('usuario_id');
         parent::addAttribute('descricao');
         parent::addAttribute('qtd_nota');
@@ -34,63 +34,35 @@ class Entrada extends TRecord
 
     
     /**
-     * Method set_tipo_entrada
-     * Sample of usage: $entrada->tipo_entrada = $object;
-     * @param $object Instance of Tipoentrada
+     * Method set_tipo_entrada_saida
+     * Sample of usage: $entrada->tipo_entrada_saida = $object;
+     * @param $object Instance of TipoEntradaSaida
      */
-    public function set_tipo_entrada(TipoEntradaSaida $object)
+    public function set_tipo_entrada_saida(TipoEntradaSaida $object)
     {
-        $this->tipo_entrada = $object;
-        $this->tipo_entrada_id = $object->id;
+        $this->tipo_entrada_saida = $object;
+        $this->tipo_entrada_saida_id = $object->id;
     }
     
     /**
-     * Method get_tipo_entrada
-     * Sample of usage: $entrada->tipo_entrada->attribute;
-     * @returns Tipoentrada instance
+     * Method get_tipo_entrada_saida
+     * Sample of usage: $entrada->tipo_entrada_saida->attribute;
+     * @returns TipoEntradaSaida instance
      */
-    public function get_tipo_entrada()
+    public function get_tipo_entrada_saida()
     {
         // loads the associated object
-        if (empty($this->tipo_entrada))
-            $this->tipo_entrada = new TipoEntradaSaida($this->tipo_entrada_id);
+        if (empty($this->tipo_entrada_saida))
+            $this->tipo_entrada_saida = new TipoEntradaSaida($this->tipo_entrada_saida_id);
     
         // returns the associated object
-        return $this->tipo_entrada;
+        return $this->tipo_entrada_saida;
     }
-    
-    
-    /**
-     * Method set_consumo
-     * Sample of usage: $entrada->consumo = $object;
-     * @param $object Instance of Consumo
-     */
-    public function set_consumo(Consumo $object)
-    {
-        $this->consumo = $object;
-        $this->consumo_id = $object->id;
-    }
-    
-    /**
-     * Method get_consumo
-     * Sample of usage: $entrada->consumo->attribute;
-     * @returns Consumo instance
-     */
-    public function get_consumo()
-    {
-        // loads the associated object
-        if (empty($this->consumo))
-            $this->consumo = new Consumo($this->consumo_id);
-    
-        // returns the associated object
-        return $this->consumo;
-    }
-    
     
     
     /**
      * Method set_produto
-     * Sample of usage: $consumo->produto = $object;
+     * Sample of usage: $entrada->produto = $object;
      * @param $object Instance of Produto
      */
     public function set_produto(Produto $object)
@@ -101,7 +73,7 @@ class Entrada extends TRecord
     
     /**
      * Method get_produto
-     * Sample of usage: $consumo->produto->attribute;
+     * Sample of usage: $entrada->produto->attribute;
      * @returns Produto instance
      */
     public function get_produto()
@@ -113,11 +85,11 @@ class Entrada extends TRecord
         // returns the associated object
         return $this->produto;
     }
-
-
+    
+    
     /**
      * Method set_usuario
-     * Sample of usage: $reserva->usuario = $object;
+     * Sample of usage: $entrada->usuario = $object;
      * @param $object Instance of SystemUser
      */
     public function set_usuario(SystemUser $object)
@@ -128,7 +100,7 @@ class Entrada extends TRecord
     
     /**
      * Method get_usuario
-     * Sample of usage: $reserva->usuario->attribute;
+     * Sample of usage: $entrada->usuario->attribute;
      * @returns SystemUser instance
      */
     public function get_usuario()
@@ -140,4 +112,7 @@ class Entrada extends TRecord
         // returns the associated object
         return $this->usuario;
     }
+    
+
+
 }

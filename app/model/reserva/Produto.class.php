@@ -9,6 +9,7 @@ class Produto extends TRecord
     const PRIMARYKEY= 'id';
     const IDPOLICY =  'max'; // {max, serial}
     
+    
     /**
      * Constructor method
      */
@@ -19,5 +20,6 @@ class Produto extends TRecord
         parent::addAttribute('nome');
         parent::addAttribute('dtcadastro');
     }
+
 
 }

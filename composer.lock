@@ -329,16 +329,16 @@
         },
         {
             "name": "league/mime-type-detection",
-            "version": "1.5.0",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/mime-type-detection.git",
-                "reference": "ea2fbfc988bade315acd5967e6d02274086d0f28"
+                "reference": "353f66d7555d8a90781f6f5e7091932f9a4250aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/ea2fbfc988bade315acd5967e6d02274086d0f28",
-                "reference": "ea2fbfc988bade315acd5967e6d02274086d0f28",
+                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/353f66d7555d8a90781f6f5e7091932f9a4250aa",
+                "reference": "353f66d7555d8a90781f6f5e7091932f9a4250aa",
                 "shasum": ""
             },
             "require": {
@@ -376,7 +376,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-09-21T18:10:53+00:00"
+            "time": "2020-10-18T11:50:25+00:00"
         },
         {
             "name": "linfo/linfo",
@@ -606,16 +606,16 @@
         },
         {
             "name": "nfephp-org/sped-nfe",
-            "version": "v5.0.106",
+            "version": "v5.0.108",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nfephp-org/sped-nfe.git",
-                "reference": "10e159adae970cf7e28c75f7d113bb7edd314078"
+                "reference": "28679e6dcb2b2111fbbaeabfb679242a4dd56bf1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nfephp-org/sped-nfe/zipball/10e159adae970cf7e28c75f7d113bb7edd314078",
-                "reference": "10e159adae970cf7e28c75f7d113bb7edd314078",
+                "url": "https://api.github.com/repos/nfephp-org/sped-nfe/zipball/28679e6dcb2b2111fbbaeabfb679242a4dd56bf1",
+                "reference": "28679e6dcb2b2111fbbaeabfb679242a4dd56bf1",
                 "shasum": ""
             },
             "require": {
@@ -675,7 +675,7 @@
                 "nfephp",
                 "sped"
             ],
-            "time": "2020-06-08T19:54:33+00:00"
+            "time": "2020-10-14T18:48:25+00:00"
         },
         {
             "name": "pablodalloglio/ole",
@@ -683,12 +683,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pablodalloglio/ole.git",
-                "reference": "b5698257fc21f3a8734c63c9224df9c48cba8d6f"
+                "reference": "f2c9e55125889d4106bee23ab2ecdffe29f7c0e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pablodalloglio/ole/zipball/b5698257fc21f3a8734c63c9224df9c48cba8d6f",
-                "reference": "b5698257fc21f3a8734c63c9224df9c48cba8d6f",
+                "url": "https://api.github.com/repos/pablodalloglio/ole/zipball/f2c9e55125889d4106bee23ab2ecdffe29f7c0e5",
+                "reference": "f2c9e55125889d4106bee23ab2ecdffe29f7c0e5",
                 "shasum": ""
             },
             "type": "library",
@@ -701,7 +701,7 @@
                 "./"
             ],
             "license": [
-                "PHP"
+                "PHP-3.01"
             ],
             "authors": [
                 {
@@ -715,12 +715,12 @@
                     "role": "Lead"
                 }
             ],
-            "description": "More info available on: http://pear.php.net/package/OLE",
+            "description": "Derivation from pear OLE without PEAR dependency, and with Exceptions instead of PearErrors.",
             "support": {
-                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=OLE",
-                "source": "https://github.com/pablodalloglio/OLE"
+                "source": "https://github.com/pablodalloglio/OLE",
+                "issues": "https://github.com/pablodalloglio/ole/issues"
             },
-            "time": "2018-04-26T14:25:39+00:00"
+            "time": "2020-10-25T18:04:22+00:00"
         },
         {
             "name": "pablodalloglio/spreadsheet_excel_writer",
@@ -728,12 +728,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pablodalloglio/spreadsheet_excel_writer.git",
-                "reference": "84e5c1a4aa9b93ba1750c33ece6ae25eb19d2851"
+                "reference": "4c7138aadc6a4dc3865c1aa24911cb0ddc5ea8a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pablodalloglio/spreadsheet_excel_writer/zipball/84e5c1a4aa9b93ba1750c33ece6ae25eb19d2851",
-                "reference": "84e5c1a4aa9b93ba1750c33ece6ae25eb19d2851",
+                "url": "https://api.github.com/repos/pablodalloglio/spreadsheet_excel_writer/zipball/4c7138aadc6a4dc3865c1aa24911cb0ddc5ea8a4",
+                "reference": "4c7138aadc6a4dc3865c1aa24911cb0ddc5ea8a4",
                 "shasum": ""
             },
             "require": {
@@ -755,7 +755,7 @@
                 "./"
             ],
             "license": [
-                "LGPL"
+                "LGPL-2.1-or-later"
             ],
             "authors": [
                 {
@@ -779,12 +779,12 @@
                     "role": "Developer"
                 }
             ],
-            "description": "More info available on: http://pear.php.net/package/Spreadsheet_Excel_Writer",
+            "description": "Derivation from SpreadsheetExcelWriter without PEAR dependency, and with Exceptions instead of PearErrors.",
             "support": {
-                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Spreadsheet_Excel_Writer",
-                "source": "https://github.com/pear/Spreadsheet_Excel_Writer"
+                "source": "https://github.com/pablodalloglio/spreadsheet_excel_writer",
+                "issues": "https://github.com/pablodalloglio/spreadsheet_excel_writer/issues"
             },
-            "time": "2018-04-26T14:06:36+00:00"
+            "time": "2020-10-25T18:05:36+00:00"
         },
         {
             "name": "phenx/php-font-lib",

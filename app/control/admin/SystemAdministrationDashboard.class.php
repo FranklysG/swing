@@ -37,11 +37,11 @@ class SystemAdministrationDashboard extends TPage
             
             foreach ($objects as $value) {
                 $indicator1->enableSection('main', ['title' => 'Ocupados Hoje',    'icon' => 'users',       'background' => 'orange', 'value' => $value->ocupados_hoje]);
-                $indicator2->enableSection('main', ['title' => 'Entradas Mês', 'icon' => 'coins',       'background' => 'blue',  'value' => Convert::toMonetario($value->est_entrada_mensal + $value->est_entrada_mensal_quarto)]);
+                $indicator2->enableSection('main', ['title' => 'Entradas Mês', 'icon' => 'coins',       'background' => 'blue',  'value' => Convert::toMonetario($value->est_entrada_mensal + $value->est_entrada_mensal_quarto + $value->venda_externa_mensal)]);
                 $indicator3->enableSection('main', ['title' => 'Saida Mês', 'icon' => 'money-check-alt',       'background' => 'red',  'value' => Convert::toMonetario($value->est_saida_mensal)]);
-                $indicator4->enableSection('main', ['title' => 'Luc. Liq Sem',   'icon' => 'hand-holding-usd',      'background' => 'orange',   'value' => Convert::toMonetario(($value->est_entrada_semanal + $value->est_entrada_semanal_quarto) - ($value->est_saida_semanal))]);
-                $indicator5->enableSection('main', ['title' => 'Luc. Liq Mês',    'icon' => 'receipt', 'background' => 'purple', 'value' => Convert::toMonetario(($value->est_entrada_mensal + $value->est_entrada_mensal_quarto) - ($value->est_saida_mensal))]);
-                $indicator6->enableSection('main', ['title' => 'Luc. Liq Anual', 'icon' => 'money-bill-wave',       'background' => 'green',  'value' => Convert::toMonetario(($value->est_entrada_anual  + $value->est_entrada_anual_quarto) - ($value->est_saida_anual))]);
+                $indicator4->enableSection('main', ['title' => 'Luc. Liq Sem',   'icon' => 'hand-holding-usd',      'background' => 'orange',   'value' => Convert::toMonetario(($value->est_entrada_semanal + $value->est_entrada_semanal_quarto + $value->venda_externa_semanal) - ($value->est_saida_semanal))]);
+                $indicator5->enableSection('main', ['title' => 'Luc. Liq Mês',    'icon' => 'receipt', 'background' => 'purple', 'value' => Convert::toMonetario(($value->est_entrada_mensal + $value->est_entrada_mensal_quarto + $value->venda_externa_mensal) - ($value->est_saida_mensal))]);
+                $indicator6->enableSection('main', ['title' => 'Luc. Liq Anual', 'icon' => 'money-bill-wave',       'background' => 'green',  'value' => Convert::toMonetario(($value->est_entrada_anual  + $value->est_entrada_anual_quarto + $value->venda_externa_anual) - ($value->est_saida_anual))]);
             }
             
             

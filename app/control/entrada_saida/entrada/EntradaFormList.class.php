@@ -29,23 +29,23 @@ class EntradaFormList extends TPage
 
         // create the form fields
         $id = new THidden('id');
-        $tipo_entrada_id = new TDBUniqueSearch('tipo_entrada_id', 'app', 'TipoEntradaSaida', 'id', 'nome');
-        $tipo_entrada_id->setMinLength(0);
-        $tipo_entrada_id->addValidation('Campo Data', new TRequiredValidator);
+        $tipo_entrada_saida_id = new TDBUniqueSearch('tipo_entrada_saida_id', 'app', 'TipoEntradaSaida', 'id', 'nome');
+        $tipo_entrada_saida_id->setMinLength(0);
+        $tipo_entrada_saida_id->addValidation('Campo tipo entrada', new TRequiredValidator);
         $produto_id = new TDBUniqueSearch('produto_id', 'app', 'Produto', 'id', 'nome');
         $produto_id->setMinLength(0);
-        $produto_id->addValidation('Campo Data', new TRequiredValidator);
+        $produto_id->addValidation('Campo produto', new TRequiredValidator);
         $usuario_id = new TEntry('usuario_id');
         $descricao = new TEntry('descricao');
         $descricao->forceUpperCase();
         $qtd_nota = new TEntry('qtd_nota');
-        $qtd_nota->addValidation('Campo Data', new TRequiredValidator);
+        $qtd_nota->addValidation('Campo quantidade', new TRequiredValidator);
         $valor_uni = new TEntry('valor_uni');
         $valor_uni->setNumericMask(2, ',', '.', true);
-        $valor_uni->addValidation('Campo Data', new TRequiredValidator);
+        $valor_uni->addValidation('Campo valor unitario', new TRequiredValidator);
         $valor_venda_uni = new TEntry('valor_venda_uni');
         $valor_venda_uni->setNumericMask(2, ',', '.', true);
-        $valor_venda_uni->addValidation('Campo Data', new TRequiredValidator);
+        $valor_venda_uni->addValidation('Campo venda', new TRequiredValidator);
         $status = new TEntry('status');
         $dtcadastro = new TDate('dtcadastro');
         $dtcadastro->setMask('dd/mm/yyyy');
@@ -55,7 +55,7 @@ class EntradaFormList extends TPage
         $this->form->addFields( [$id ]);
         // add the fields
         $row = $this->form->addFields(
-                                [ new TLabel('Tipo Entrada'), $tipo_entrada_id ],
+                                [ new TLabel('Tipo Entrada'), $tipo_entrada_saida_id ],
                                 [ new TLabel('Produto'), $produto_id ] ,
                                 [ new TLabel('Quantidade'), $qtd_nota ],
                                 [ new TLabel('Valor Uni'), $valor_uni ] );
@@ -92,7 +92,7 @@ class EntradaFormList extends TPage
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_tipo_entrada_id = new TDataGridColumn('tipo_entrada->nome', 'TIPO', 'left');
+        $column_tipo_entrada_saida_id = new TDataGridColumn('tipo_entrada_saida->nome', 'TIPO', 'left');
         $column_produto_id = new TDataGridColumn('produto->nome', 'PRODUTO', 'left');
         $column_usuario_id = new TDataGridColumn('usuario_id', 'Usuario Id', 'left');
         $column_nome = new TDataGridColumn('descricao', 'NOME', 'left');
@@ -146,7 +146,7 @@ class EntradaFormList extends TPage
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
-        $this->datagrid->addColumn($column_tipo_entrada_id);
+        $this->datagrid->addColumn($column_tipo_entrada_saida_id);
         // $this->datagrid->addColumn($column_usuario_id);
         $this->datagrid->addColumn($column_produto_id);
         $this->datagrid->addColumn($column_qtd_nota);
@@ -344,6 +344,7 @@ class EntradaFormList extends TPage
             
             $object = new Entrada;  // create an empty object
             $object->qtd_estoque = $data->qtd_nota;
+            $object->descricao = Produto::find($param['produto_id'])->nome;
             $object->usuario_id = TSession::getValue('userid');
             $object->status = 1;
             

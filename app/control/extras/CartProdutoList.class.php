@@ -300,8 +300,8 @@ class CartProdutoList extends TPage
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
             // tipo da entrada 1 = consumo
-            $criteria->add(new TFilter('tipo_entrada_id','=',1));
-            
+            $criteria->add(new TFilter('tipo_entrada_saida_id','=',1));
+            $criteria->add(new TFilter('qtd_estoque','>=',1));
             // status 0 diz que o produto ainda ta disponivel
             // $criteria->add(new TFilter('status','!=',1));
             // load the objects according to criteria

@@ -23,8 +23,12 @@ class ViewFaturamento extends TRecord
         parent::addAttribute('est_saida_semanal');
         parent::addAttribute('est_saida_mensal');
         parent::addAttribute('est_saida_anual');
+        parent::addAttribute('est_entrada_semanal');
         parent::addAttribute('est_entrada_mensal');
         parent::addAttribute('est_entrada_anual');
+        parent::addAttribute('venda_externa_semanal');
+        parent::addAttribute('venda_externa_mensal');
+        parent::addAttribute('venda_externa_anual');
     }
 
 

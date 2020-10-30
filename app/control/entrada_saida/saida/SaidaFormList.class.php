@@ -25,7 +25,7 @@ class SaidaFormList extends TPage
 
         // create the form fields
         $id = new THidden('id');
-        $tipo_saida_id = new TDBUniqueSearch('tipo_saida_id', 'app', 'TipoEntradaSaida', 'id', 'nome');
+        $tipo_saida_id = new TDBUniqueSearch('tipo_entrada_saida_id', 'app', 'TipoEntradaSaida', 'id', 'nome');
         $tipo_saida_id->setMinLength(0);
         $tipo_saida_id->addValidation('Campo Tipo da saida', new TRequiredValidator);
         $descricao = new TEntry('descricao');
@@ -74,7 +74,7 @@ class SaidaFormList extends TPage
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_tipo_saida_id = new TDataGridColumn('tipo_saida->nome', 'TIPO DA SAIDA', 'left');
+        $column_tipo_saida_id = new TDataGridColumn('tipo_entrada_saida->nome', 'TIPO DA SAIDA', 'left');
         $column_descicao = new TDataGridColumn('descricao', 'DESCIÇÃO', 'left');
         $column_valor_saida = new TDataGridColumn('valor_saida', 'VALOR', 'right');
         $column_status = new TDataGridColumn('status', 'Status', 'right');

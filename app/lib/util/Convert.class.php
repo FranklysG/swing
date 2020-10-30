@@ -47,11 +47,7 @@ class Convert
 
     public static function toMonetario($value)
     {
-        if(empty($value)){
-            return 'R$ ' . number_format((string) 0, 2, ',', '.');
-        }else{
-            return 'R$ ' . number_format((string) $value, 2, ',', '.');
-        }
+        return 'R$ ' . number_format((string) $value, 2, ',', '.');
     }
 
     public static function toExtenso($value)
@@ -139,7 +135,7 @@ class Convert
     public static function toDateTimeBR($value)
     {
         $date = new DateTime($value);
-        return $date->format('d/m/Y H:i');
+        return $date->format('d/m/Y H:i:s');
     }
 
     // pegar o mes o dia ou ano da data us
