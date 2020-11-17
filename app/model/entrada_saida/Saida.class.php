@@ -12,6 +12,7 @@ class Saida extends TRecord
     
     private $tipo_entrada_saida;
     private $usuario;
+    private $entrada;
 
     /**
      * Constructor method
@@ -20,6 +21,7 @@ class Saida extends TRecord
     {
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('usuario_id');
+        parent::addAttribute('entrada_id');
         parent::addAttribute('tipo_entrada_saida_id');
         parent::addAttribute('descricao');
         parent::addAttribute('valor_saida');
@@ -79,6 +81,31 @@ class Saida extends TRecord
     
         // returns the associated object
         return $this->usuario;
+    }
+    /**
+     * Method set_entrada
+     * Sample of usage: $saida->entrada = $object;
+     * @param $object Instance of SystemUser
+     */
+    public function set_entrada(SystemUser $object)
+    {
+        $this->entrada = $object;
+        $this->entrada_id = $object->id;
+    }
+    
+    /**
+     * Method get_entrada
+     * Sample of usage: $saida->entrada->attribute;
+     * @returns SystemUser instance
+     */
+    public function get_entrada()
+    {
+        // loads the associated object
+        if (empty($this->entrada))
+            $this->entrada = new SystemUser($this->entrada_id);
+    
+        // returns the associated object
+        return $this->entrada;
     }
     
 

@@ -173,7 +173,7 @@ class VendaFormList extends TPage
             // default order
             if (empty($param['order']))
             {
-                $param['order'] = 'id';
+                $param['order'] = 'dtcadastro';
                 $param['direction'] = 'asc';
             }
             $criteria->setProperties($param); // order, offset

@@ -27,22 +27,26 @@ class SaidaFormList extends TPage
         $id = new THidden('id');
         $tipo_saida_id = new TDBUniqueSearch('tipo_entrada_saida_id', 'app', 'TipoEntradaSaida', 'id', 'nome');
         $tipo_saida_id->setMinLength(0);
-        $tipo_saida_id->addValidation('Campo Tipo da saida', new TRequiredValidator);
+        // $tipo_saida_id->addValidation('Campo Tipo da saida', new TRequiredValidator);
+        $produto_id = new TDBUniqueSearch('entrada_id', 'app', 'Entrada', 'id', 'descricao');
+        $produto_id->setMinLength(0);
+        // $produto_id->addValidation('Campo Tipo da saida', new TRequiredValidator);
         $descricao = new TEntry('descricao');
         $descricao->forceUpperCase();
-        $descricao->addValidation('Campo Descrição', new TRequiredValidator);
+        // $descricao->addValidation('Campo Descrição', new TRequiredValidator);
         $valor_saida = new TEntry('valor_saida');
         $valor_saida->setNumericMask(2, ',', '.', true);
-        $valor_saida->addValidation('Campo de valor', new TRequiredValidator);
+        // $valor_saida->addValidation('Campo de valor', new TRequiredValidator);
         $status = new THidden('status');
         $dtcadastro = new TDate('dtcadastro');
         $dtcadastro->setMask('dd/mm/yyyy');
         $dtcadastro->setDatabaseMask('yyyy-mm-dd');
-        $dtcadastro->addValidation('Campo Data', new TRequiredValidator);
+        // $dtcadastro->addValidation('Campo Data', new TRequiredValidator);
 
         // add the fields
         $this->form->addFields([ $id ]);
         $row = $this->form->addFields( [ new TLabel('Tipo da Saida'),$tipo_saida_id ] ,
+                                [ new TLabel('Produto'),$produto_id ] ,
                                 [ new TLabel('Descrição'),$descricao ] ,
                                 [ new TLabel('Valor'),$valor_saida ] ,
                                 [ new TLabel('Data'),$dtcadastro ] 
@@ -129,7 +133,7 @@ class SaidaFormList extends TPage
         //$action2->setButtonClass('btn btn-default');
         $action2->setLabel(_t('Delete'));
         $action2->setImage('far:trash-alt red');
-        $action2->setField('id');
+        $action2->setFields(['id','entrada_id']);
         $action2->setDisplayCondition( array($this, 'displayColumnToday') );
         
         // add the actions to the datagrid
@@ -260,6 +264,10 @@ class SaidaFormList extends TPage
             TTransaction::open('app'); // open a transaction with database
             $object = new Saida($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
+            
+            $entrada = Entrada::find($param['entrada_id']);
+            $entrada->qtd_estoque += 1;
+            $entrada->store();
             TTransaction::close(); // close the transaction
             
             $pos_action = new TAction([__CLASS__, 'onReload']);
@@ -293,7 +301,15 @@ class SaidaFormList extends TPage
            
             $object = new Saida;  // create an empty object
             $object->fromArray( (array) $data); // load the object with data
-            $object->entrada_id = 1;
+            if(!empty($param['entrada_id'])){
+                $entrada = Entrada::find($param['entrada_id']);
+                $object->entrada_id = $param['entrada_id'];
+                $object->descricao = $entrada->descricao;
+                $entrada->qtd_estoque -= 1;
+                $entrada->store();
+            }else{
+                $object->entrada_id = 1;
+            }
             $object->usuario_id = TSession::getValue('userid');
             $object->status = 1;
             (!isset($data->dtcadastro))? 

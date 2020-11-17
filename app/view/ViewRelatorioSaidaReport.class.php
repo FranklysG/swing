@@ -24,7 +24,7 @@ class ViewRelatorioSaidaReport extends TPage
         // create the form fields
         $tipo_entrada_saida_id = new TDBUniqueSearch('tipo_entrada_saida_id', 'app', 'TipoEntradaSaida', 'id', 'nome');
         $tipo_entrada_saida_id->setMinLength(0);
-        $tipo_entrada_saida_id->addValidation('Produto', new TRequiredValidator);
+        // $tipo_entrada_saida_id->addValidation('Produto', new TRequiredValidator);
         $descricao = new TEntry('descricao');
         
         // create the form fields
@@ -76,6 +76,10 @@ class ViewRelatorioSaidaReport extends TPage
             $repository = new TRepository('Saida');
             $criteria   = new TCriteria;
 
+            if (isset($data->tipo_entrada_saida_id) and $data->tipo_entrada_saida_id)
+            {
+                $criteria->add(new TFilter('dtcadastro', 'between', "{$data->tipo_entrada_saida_id}"));
+            }
             if ((isset($data->date_ini) and $data->date_ini) and (isset($data->date_end) and $data->date_end))
             {
                 $criteria->add(new TFilter('dtcadastro', 'between', "{$data->date_ini}", "{$data->date_end}"));
