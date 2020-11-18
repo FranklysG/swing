@@ -30,7 +30,7 @@ class VendaFormList extends TPage
         $criteria->add(new TFilter('tipo_entrada_saida_id','=',1));
         // $entrada_id = new TDBUniqueSearch('entrada_id', 'app', 'Entrada', 'id', 'descricao',null,$criteria);
         // $entrada_id->setMinLength(0);
-        $entrada_id->addValidation('Produto', new TRequiredValidator);
+        // $entrada_id->addValidation('Produto', new TRequiredValidator);
         $entrada_id = new TDBCombo('entrada_id', 'app', 'Entrada', 'id', '{descricao} - Estoque ({qtd_estoque})',null,$criteria);
         $qtd_venda = new TEntry('qtd_venda');
         $qtd_venda->addValidation('Quantidade', new TRequiredValidator);
