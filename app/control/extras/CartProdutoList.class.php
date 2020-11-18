@@ -7,6 +7,7 @@ class CartProdutoList extends TPage
 {
     private $form; // form
     private $datagrid; // listing
+    private $datagrid_cosumido; // listing
     private $pageNavigation;
     private $formgrid;
     private $loaded;
@@ -54,8 +55,9 @@ class CartProdutoList extends TPage
         
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'right');
-        $column_nome = new TDataGridColumn('produto->nome', 'NOME', 'left');
+        $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
         $column_qtd = new TDataGridColumn('qtd', 'QTD', 'center');
+        $column_qtd_estoque = new TDataGridColumn('qtd_estoque', 'QTD ESTOQUE', 'center');
         $column_check = new TDataGridColumn('check', '', 'right');
         $column_valor = new TDataGridColumn('valor_venda_uni', 'VALOR', 'right');
 
@@ -82,9 +84,9 @@ class CartProdutoList extends TPage
         // $this->datagrid->addColumn($column_id);
         $this->datagrid->addColumn($column_qtd);
         $this->datagrid->addColumn($column_nome);
+        $this->datagrid->addColumn($column_qtd_estoque);
         // $this->datagrid->addColumn($column_check);
         $this->datagrid->addColumn($column_valor);
-
 
         $action1 = new TDataGridAction([$this, 'onAddItem'],['static'=>'1']);
         $action1->setFields(['id', 'valor_venda_uni']);
@@ -96,8 +98,42 @@ class CartProdutoList extends TPage
         $this->datagrid->addAction($action1, 'adicionar',   'fa:plus-circle green');
         $this->datagrid->addAction($action2 ,'remover', 'fa:minus-circle red');
         
+        // creates a Datagrid of products consumidos 
+        $this->datagrid_cosumido = new BootstrapDatagridWrapper(new TDataGrid);
+        $this->datagrid_cosumido->style = 'width: 100%';
+        $this->datagrid_cosumido->datatable = 'true';
+        
+        // creates the datagrid columns
+        $column_id = new TDataGridColumn('id', 'Id', 'right');
+        $column_entrada_id = new TDataGridColumn('entrada_id', 'Id', 'right');
+        $column_nome = new TDataGridColumn('nome', 'NOME', 'left');
+        $column_qtd = new TDataGridColumn('qtd', 'QTD', 'center');
+        $column_qtd_estoque = new TDataGridColumn('qtd_estoque', 'QTD ESTOQUE', 'center');
+        $column_check = new TDataGridColumn('check', '', 'right');
+        $column_valor = new TDataGridColumn('valor_venda_uni', 'VALOR', 'right');
+
+        $column_valor->setTransformer(function ($value) {
+            return Convert::toMonetario($value);
+        });
+
+        // add the columns to the DataGrid
+        // $this->datagrid_cosumido->addColumn($column_id);
+        $this->datagrid_cosumido->addColumn($column_qtd);
+        $this->datagrid_cosumido->addColumn($column_nome);
+        // $this->datagrid_cosumido->addColumn($column_qtd_estoque);
+        // $this->datagrid_cosumido->addColumn($column_check);
+        $this->datagrid_cosumido->addColumn($column_valor);
+
+        $action4 = new TDataGridAction([$this, 'onDelItem'],['static'=>'1']);
+        $action4->setFields(['entrada_id', 'valor_venda_uni']);
+        $action4->setDisplayCondition( array($this, 'displayColumnMinus') );
+        
+        $this->datagrid_cosumido->addAction($action4 ,'remover', 'fa:minus-circle red');
+        
         // create the datagrid model
         $this->datagrid->createModel();
+        $this->datagrid_cosumido->createModel();
+
         // creates the page navigation
         $this->pageNavigation = new TPageNavigation;
         $this->pageNavigation->setAction(new TAction([$this, 'onReload']));
@@ -108,8 +144,8 @@ class CartProdutoList extends TPage
         $this->form->addHeaderActionLink( _t('Close'), new TAction(array($this, 'onClose')), 'fa:times red');
         // $this->form->addFields([$this->datagrid]);
         parent::add($this->form);
-        parent::add($this->datagrid);
-        parent::add($this->pageNavigation);
+        parent::add(TPanelGroup::pack('<strong>CONSUMIDOS NO QUARTO</strong>', $this->datagrid_cosumido));
+        parent::add(TPanelGroup::pack('<strong>PORDUTOS EM ESTOQUE</strong>', $this->datagrid, $this->pageNavigation));
 
     }
     
@@ -218,7 +254,9 @@ class CartProdutoList extends TPage
     {
         try {
             TTransaction::open('app');
-            
+            if(empty($param['id'])){
+                $param['id'] = $param['entrada_id'];
+            }
             // atualiza o valor do mapa_reserva de acordo com a remoção do produto
             $data = TSession::getValue('form_cart_produto_list_obj');
             $mapa_reserva = MapaReserva::find($data->id_mapa_reserva);
@@ -282,29 +320,25 @@ class CartProdutoList extends TPage
                 $this->form->setData(TSession::getValue('form_cart_produto_list_obj'));
                
             }
-           
-            
-            // creates a repository for Produto
-            // $repository = new TRepository('Produto');
-            $repository = new TRepository('Entrada');
-            $limit = 10;
-            // creates a criteria
-            $criteria = new TCriteria;
-            
-            // default order
+             
             if (empty($param['order']))
             {
                 $param['order'] = 'id';
                 $param['direction'] = 'asc';
             }
+
+            // creates a repository for Produto
+            $repository = new TRepository('Entrada');
+            $limit = 10;
+            
+            $criteria = new TCriteria;
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
+            
             // tipo da entrada 1 = consumo
             $criteria->add(new TFilter('tipo_entrada_saida_id','=',1));
-            $criteria->add(new TFilter('qtd_estoque','>=',1));
+            $criteria->add(new TFilter('qtd_estoque','>',0));
             // status 0 diz que o produto ainda ta disponivel
-            // $criteria->add(new TFilter('status','!=',1));
-            // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             
             if (is_callable($this->transformCallback))
@@ -312,7 +346,19 @@ class CartProdutoList extends TPage
                 call_user_func($this->transformCallback, $objects, $param);
             }
             
-            $this->datagrid->clear();
+            $cart_products = [];
+            if($objects){
+                foreach ($objects as $object) {
+
+                    $cart_products[$object->produto_id] = [
+                        'id' => $object->id,
+                        'produto_id' => $object->produto_id,
+                        'nome' => $object->descricao,
+                        'qtd_estoque' => $object->qtd_estoque,
+                        'valor_venda_uni' => $object->valor_venda_uni
+                    ];
+                }
+            }
             
             // verifica se o id do quarto ta vindo no TEntry na aba do carrinho, se não tiver 
             // ele pega pelo param
@@ -329,27 +375,28 @@ class CartProdutoList extends TPage
             if(isset($consumos)){
                 foreach ($consumos as $value) {
                     $ids[] = $value->entrada_id;
+                   
                 }
             }
-              
             
-            if ($objects)
+            $this->datagrid->clear();
+            if ($cart_products)
             {
-                foreach ($objects as $object)
+                foreach ($cart_products as $object)
                 {
                     // inicia a quantidade de produtos do carrinho no 0
-                    $object->qtd = 0;
-                    $object->check = 0;
+                    $object['qtd'] = 0;
+                    $object['check'] = 0;
                     foreach ($ids as $value) {
                         // se já tiver o id do produto ele soma mais um e se
                         // não tiver ele adiciona um na contagem
-                        if($object->id == $value){
-                            $object->qtd += 1;
+                        if($object['id'] == $value){
+                            $object['qtd'] += 1;
                             // check serve pra controlar o botão de menos
-                            $object->check = 1;
+                            $object['check'] = 1;
                         }
                     }
-                    $this->datagrid->addItem($object);
+                    $this->datagrid->addItem((object)$object);
                 }
             }
             
@@ -360,7 +407,54 @@ class CartProdutoList extends TPage
             $this->pageNavigation->setCount($count); // count of records
             $this->pageNavigation->setProperties($param); // order, page
             $this->pageNavigation->setLimit($limit); // limit
+
+            // creates a repository for Produto
+            $repository = new TRepository('Consumo');
+            $limit = 10;
             
+            $criteria = new TCriteria;
+            $criteria->setProperties($param); // order, offset
+            $criteria->setProperty('limit', $limit);
+            
+            // tipo da entrada 1 = consumo
+            $criteria->add(new TFilter('mapa_reserva_id','=',$id_mapa_reserva));
+            // status 0 diz que o produto ainda ta disponivel
+            $objects = $repository->load($criteria, FALSE);
+            
+            $cart_products = [];
+            if($objects){
+                foreach ($objects as $object) {
+                    $cart_products[$object->entrada_id] = [
+                        'id' => $object->id,
+                        'entrada_id' => $object->entrada_id,
+                        'nome' => $object->entrada->descricao,
+                        'qtd_estoque' => $object->entrada->qtd_estoque,
+                        'valor_venda_uni' => $object->entrada->valor_venda_uni
+                    ];
+                }
+            }
+            
+            if ($cart_products)
+            {
+                foreach ($cart_products as $object)
+                {
+                    // inicia a quantidade de produtos do carrinho no 0
+                    $object['qtd'] = 0;
+                    $object['check'] = 0;
+                    foreach ($ids as $value) {
+                        // se já tiver o id do produto ele soma mais um e se
+                        // não tiver ele adiciona um na contagem
+                        if(isset($object['entrada_id'])){
+                            if($object['entrada_id'] == $value){
+                                $object['qtd'] += 1;
+                                $object['check'] = 1;
+                                // check serve pra controlar o botão de menos
+                            }
+                        }
+                    }
+                    $this->datagrid_cosumido->addItem((object)$object);
+                }
+            }
             // close the transaction
             TTransaction::close();
             $this->loaded = true;

@@ -26,10 +26,12 @@ class VendaFormList extends TPage
         // create the form fields
         $id = new THidden('id');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('qtd_estoque','>=',1));
-        $entrada_id = new TDBUniqueSearch('entrada_id', 'app', 'Entrada', 'id', 'descricao',null,$criteria);
-        $entrada_id->setMinLength(0);
+        $criteria->add(new TFilter('qtd_estoque','>',0));
+        $criteria->add(new TFilter('tipo_entrada_saida_id','=',1));
+        // $entrada_id = new TDBUniqueSearch('entrada_id', 'app', 'Entrada', 'id', 'descricao',null,$criteria);
+        // $entrada_id->setMinLength(0);
         $entrada_id->addValidation('Produto', new TRequiredValidator);
+        $entrada_id = new TDBCombo('entrada_id', 'app', 'Entrada', 'id', '{descricao} - Estoque ({qtd_estoque})',null,$criteria);
         $qtd_venda = new TEntry('qtd_venda');
         $qtd_venda->addValidation('Quantidade', new TRequiredValidator);
 
