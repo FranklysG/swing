@@ -30,13 +30,22 @@ class ReservaList extends TPage
         $mapa_reserva_id = new TEntry('mapa_reserva_id');
         $hora = new TEntry('hora');
         $status = new TEntry('status');
-        $dtcadastro = new TEntry('dtcadastro');
+        $dtcadastro = new TEntry('periodo');
 
+        $periodo = new TDateRangePicker('dtcadastro');
+        
+        $periodo->setFormatDisplayDate('YYYY-MM-DD');
+        // $periodo->setFormatDate('YYYY-MM-DD');
+        // $periodo->setMaxDate('12/31/2015');
+        // $periodo->setMinDate('01/01/2012');
+        // $periodo->setStartDate("moment().subtract(29, 'days')");
+        // $periodo->setEndDate('moment()');
+        // $periodo->setDateLimit('60');
 
         // add the fields
         $row = $this->form->addFields( 
                                 [ new TLabel('STATUS'), $status],
-                                [ new TLabel('DATA'), $dtcadastro ]
+                                [ new TLabel('DATA'), $periodo ]
                              );
         $row->layout = ['col-sm-3','col-sm-3'];
 
@@ -161,6 +170,7 @@ class ReservaList extends TPage
     {
         // get the search form data
         $data = $this->form->getData();
+        var_dump($data->dtcadastro);
         
         // clear session filters
         TSession::setValue(__CLASS__.'_filter_mapa_reserva_id',   NULL);
