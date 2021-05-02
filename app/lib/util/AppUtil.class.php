@@ -356,16 +356,16 @@ class AppUtil
 
     public static function limita_caracteres($texto, $limite, $quebra = true){
         $tamanho = strlen($texto);
-        if($tamanho <= $limite){ //Verifica se o tamanho do texto é menor ou igual ao limite
+        if($tamanho <= $limite){
            $novo_texto = $texto;
-        }else{ // Se o tamanho do texto for maior que o limite
-           if($quebra == true){ // Verifica a opção de quebrar o texto
+        }else{
+           if($quebra == true){ 
               $novo_texto = trim(substr($texto, 0, $limite))."...";
-           }else{ // Se não, corta $texto na última palavra antes do limite
-              $ultimo_espaco = strrpos(substr($texto, 0, $limite), " "); // Localiza o útlimo espaço antes de $limite
-              $novo_texto = trim(substr($texto, 0, $ultimo_espaco))."..."; // Corta o $texto até a posição localizada
+           }else{
+              $ultimo_espaco = strrpos(substr($texto, 0, $limite), " ");
+              $novo_texto = trim(substr($texto, 0, $ultimo_espaco))."..."; 
            }
         }
-        return $novo_texto; // Retorna o valor formatado
+        return $novo_texto; 
      }
 }
